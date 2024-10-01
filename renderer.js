@@ -1,5 +1,4 @@
 // renderer.js
-const { ipcRenderer } = require('electron'); // Import ipcRenderer
 const audio = document.getElementById('audio');
 const seekBar = document.getElementById('seek-bar');
 const playPauseBtn = document.getElementById('play-pause');
@@ -49,7 +48,9 @@ playPauseBtn.addEventListener('click', () => {
 });
 
 // Receive playlist from main process
-ipcRenderer.on('load-playlist', (event, audioFiles) => {
+window.electron.ipcRenderer.on('load-playlist', (audioFiles) => {
+    songList.innerHTML = ''; // Clear previous song list
+
     audioFiles.forEach(file => {
         const songItem = document.createElement('div');
         songItem.textContent = file;
