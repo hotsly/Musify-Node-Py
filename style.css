@@ -1,0 +1,33 @@
+/* style.css */
+body {
+  font-family: Arial, sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #282c34;
+  color: white;
+}
+
+.player {
+  text-align: center;
+}
+
+input[type="range"] {
+  width: 100%;
+}
+
+.song-list {
+  max-height: 200px;
+  overflow-y: auto;
+  margin-top: 20px;
+}
+
+.song-item {
+  padding: 10px;
+  cursor: pointer;
+}
+
+.song-item:hover {
+  background-color: #444;
+}

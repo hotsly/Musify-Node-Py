@@ -1,0 +1,22 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Electron Music Player</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="player">
+        <h1>Music Player</h1>
+        <audio id="audio" src="" preload="metadata"></audio>
+        <input type="range" id="seek-bar" value="0" step="1" />
+        <div>
+            <button id="play-pause">Play</button>
+        </div>
+        <div id="song-list" class="song-list"></div> <!-- Container for song list -->
+    </div>
+    <script src="renderer.js"></script>
+</body>
+</html>
