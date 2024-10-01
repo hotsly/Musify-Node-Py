@@ -1,10 +1,12 @@
 // main.js
-const { app, BrowserWindow } = require('electron');
+const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('path');
 const fs = require('fs');
 
+let mainWindow; // Declare mainWindow variable
+
 function createWindow() {
-    const win = new BrowserWindow({
+    mainWindow = new BrowserWindow({ // Assign to mainWindow
         width: 800,
         height: 600,
         webPreferences: {
@@ -14,10 +16,25 @@ function createWindow() {
         },
     });
 
-    win.loadFile('index.html');
+    mainWindow.loadFile('index.html');
 }
 
-app.whenReady().then(createWindow);
+// Listen for when the app is ready
+app.whenReady().then(() => {
+    createWindow();
+
+    // Read files from the Playlist directory
+    const playlistDir = path.join(__dirname, 'Playlist');
+    fs.readdir(playlistDir, (err, files) => {
+        if (err) throw err;
+
+        // Filter only audio files
+        const audioFiles = files.filter(file => file.endsWith('.mp3') || file.endsWith('.webm'));
+
+        // Send the audio file names to the renderer process
+        mainWindow.webContents.send('load-playlist', audioFiles);
+    });
+});
 
 app.on('window-all-closed', () => {
     if (process.platform !== 'darwin') app.quit();
@@ -25,16 +42,4 @@ app.on('window-all-closed', () => {
 
 app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow();
-});
-
-// Add this to read files from the Playlist directory
-app.on('ready', () => {
-    const playlistDir = path.join(__dirname, 'Playlist');
-    fs.readdir(playlistDir, (err, files) => {
-        if (err) throw err;
-        // Filter only audio files (you can modify this based on your needs)
-        const audioFiles = files.filter(file => file.endsWith('.mp3') || file.endsWith('.webm'));
-        // Send the audio file names to the renderer process
-        mainWindow.webContents.send('load-playlist', audioFiles);
-    });
 });
