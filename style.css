@@ -4,7 +4,8 @@ body {
   font-size: 0.9rem; /* Smaller base font size */
 }
 
-h2, h3 {
+h2,
+h3 {
   margin-top: 10px; /* Reduced spacing for headings */
 }
 
@@ -13,13 +14,17 @@ h2, h3 {
   width: 100%; /* Ensure it takes the full width up to max-width */
 }
 
-.btn-primary {
+/* Button styles */
+.btn-primary,
+.btn-secondary {
   background-color: #007bff; /* Bootstrap primary color */
   border: none; /* No border for buttons */
+  color: #fff; /* White text */
 }
 
-.btn-primary:hover {
-  background-color: #0056b3; /* Darker shade on hover */
+.btn-primary:hover,
+.btn-secondary:hover {
+  background-color: #0056b3; /* Darker blue on hover */
 }
 
 .btn-success {
@@ -29,6 +34,24 @@ h2, h3 {
 
 .btn-success:hover {
   background-color: #218838; /* Darker shade on hover */
+}
+
+/* Shuffle button styles */
+.shuffle-btn {
+  background-color: #6c757d; /* Gray background for inactive shuffle button */
+  color: #fff; /* White text color */
+}
+
+.shuffle-btn.active {
+  background-color: #007bff; /* Blue background when active */
+}
+
+.shuffle-btn:hover {
+  background-color: #0056b3; /* Darker blue on hover */
+}
+
+.shuffle-btn i {
+  color: white; /* Icon color */
 }
 
 .list-group-item {
@@ -94,7 +117,18 @@ html {
   background-color: #444; /* Highlight on hover */
 }
 
+/* Volume control */
 #volume {
   width: 70px; /* Adjust width as necessary */
   display: none; /* Start hidden */
+}
+
+#volume-btn {
+  margin-left: 10px; /* Add some space between the buttons */
+}
+
+/* Align Shuffle and Volume side by side */
+#shuffle-btn,
+#volume-btn {
+  margin-right: 5px;
 }

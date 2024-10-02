@@ -6,10 +6,9 @@ const prevBtn = document.getElementById('prev');
 const nextBtn = document.getElementById('next');
 const volumeControl = document.getElementById('volume');
 const volumeBtn = document.getElementById('volume-btn');
-
-// Playlist elements
 const youtubeLinkInput = document.getElementById('youtube-link');
 const addPlaylistBtn = document.getElementById('add-playlist-btn');
+const shuffleBtn = document.getElementById('shuffle-btn');
 
 let isSeeking = false;
 let currentSongIndex = 0;
@@ -35,6 +34,21 @@ function loadSong(index) {
     if (index < 0 || index >= audioFiles.length) return; // Boundary check
     audio.src = `./Playlist/${audioFiles[index]}`; // Set audio source
 }
+
+shuffleBtn.classList.add('inactive'); // Set default to inactive
+shuffleBtn.addEventListener('click', () => {
+    if (shuffleBtn.classList.contains('active')) {
+      shuffleBtn.classList.remove('active');
+      shuffleBtn.classList.add('inactive');
+      shuffleBtn.style.backgroundColor = '#6c757d'; // Set gray background
+      console.log("inactive")
+    } else {
+      shuffleBtn.classList.remove('inactive');
+      shuffleBtn.classList.add('active');
+      shuffleBtn.style.backgroundColor = '#007bff'; // Set blue background
+      console.log("active")
+    }
+  });
 
 // Next button functionality
 nextBtn.addEventListener('click', () => {

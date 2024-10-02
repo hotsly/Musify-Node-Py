@@ -12,6 +12,8 @@ def download_audio(youtube_url, output_path='.\\Playlist'):
         'format': 'bestaudio/best',
         'outtmpl': os.path.join(output_path, '%(title)s.%(ext)s'),
         'noplaylist': True,
+        'quiet': True,  # Suppress output
+        'no_warnings': True,  # Suppress yt-dlp warnings
     }
 
     try:
@@ -39,7 +41,7 @@ def download_audio(youtube_url, output_path='.\\Playlist'):
 
     except Exception as ex:
         print(f'Error accessing files: {ex}')
-            
+
 if __name__ == '__main__':
     if len(sys.argv) > 1:
         youtube_link = sys.argv[1]

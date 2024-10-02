@@ -16,27 +16,37 @@
             <audio id="audio" class="w-100"></audio>
         
             <!-- Custom controls -->
-            <div class="d-flex align-items-center justify-content-center">
-                <button id="prev" class="btn btn-primary mx-1 btn-sm">
-                    <i class="bi bi-skip-backward-fill"></i>
-                </button>
-                <button id="play-pause" class="btn btn-primary mx-1 btn-sm">
-                    <i class="bi bi-play-fill"></i>
-                </button>
-                <button id="next" class="btn btn-primary mx-1 btn-sm">
-                    <i class="bi bi-skip-forward-fill"></i>
-                </button>
-                <input type="range" id="seek-bar" value="0" class="form-control-range mx-1" style="width: 80px;">
-                <button id="volume-btn" class="btn btn-secondary mx-1 btn-sm" title="Volume">
-                    <i class="bi bi-volume-up-fill"></i>
-                </button>
-                <input type="range" id="volume" min="0" max="100" value="100" class="form-control-range mx-1" style="width: 70px; display: none;">
-            </div>
+            <div class="d-flex flex-column align-items-center justify-content-center">
+                <!-- Playback Controls -->
+                <div class="d-flex align-items-center justify-content-center mb-2">
+                    <button id="prev" class="btn btn-primary btn-sm mx-1">
+                        <i class="bi bi-skip-backward-fill"></i>
+                    </button>
+                    <button id="play-pause" class="btn btn-primary btn-sm mx-1">
+                        <i class="bi bi-play-fill"></i>
+                    </button>
+                    <button id="next" class="btn btn-primary btn-sm mx-1">
+                        <i class="bi bi-skip-forward-fill"></i>
+                    </button>
+                    <input type="range" id="seek-bar" value="0" class="form-control-range mx-1 seekbar" style="width: 120px;">
+                </div>
+            
+                <!-- Shuffle and Volume Controls - Side by side -->
+                <div class="d-flex align-items-center justify-content-center">
+                    <button id="shuffle-btn" class="btn btn-secondary btn-sm mx-1 shuffle-btn" title="Shuffle">
+                        <i class="bi bi-shuffle"></i>
+                    </button>
+                    <button id="volume-btn" class="btn btn-secondary btn-sm mx-1" title="Volume">
+                        <i class="bi bi-volume-up-fill"></i>
+                    </button>
+                    <input type="range" id="volume" min="0" max="100" value="100" class="form-control-range volume-range mx-1" style="width: 80px; display: none;">
+                </div>
+            </div>                                   
         </div>
         
         <h3>Add to Playlist</h3>
         <div class="input-group mb-2">
-            <input type="text" id="youtube-link" class="form-control form-control-sm" placeholder="Enter YouTube URL">
+            <input type="text" id="youtube-link" class="form-control form-control-sm" placeholder="Enter Song title or Youtube URL">
             <div class="input-group-append">
                 <button id="add-playlist-btn" class="btn btn-success btn-sm">Add</button>
             </div>
