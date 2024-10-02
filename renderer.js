@@ -124,6 +124,7 @@ addPlaylistBtn.addEventListener('click', () => {
         const loadingItem = document.createElement('div');
         loadingItem.textContent = 'Loading...'; // Set the loading text
         loadingItem.className = 'list-group-item disabled'; // Add a disabled class for styling
+        loadingItem.style.pointerEvents = 'none'; // Disable click events on this item
         songList.appendChild(loadingItem); // Add the loading item to the playlist
 
         // Show a message in the title bar to indicate adding new songs
@@ -132,18 +133,22 @@ addPlaylistBtn.addEventListener('click', () => {
         // Send the YouTube URL to the main process for downloading
         window.electron.ipcRenderer.send('download-youtube-audio', youtubeLink);
 
-        // Listen for a download completion event
-        window.electron.ipcRenderer.once('download-complete', (file) => {
-            // Remove the loading item and add the new song item
+        // Define a function to handle the download completion
+        const downloadCompleteHandler = (event, file) => {
+            // Remove the loading item
             songList.removeChild(loadingItem);
 
-            // Create a new song item for the downloaded file
-            const songName = file.split('/').pop().split('.').slice(0, -1).join('.'); // Get the name without the extension
+            // Ensure the file path is correctly formed
+            const songName = file.split('/').pop(); // Get the file name with extension
+
+            // Check if the file is really downloaded
             const songItem = document.createElement('div');
-            songItem.textContent = songName; // Use the song name without the extension
+            songItem.textContent = songName; // Use the full file name
             songItem.className = 'list-group-item'; // Updated to use list group item
+
+            // Make the new song clickable after download completes
             songItem.addEventListener('click', () => {
-                audio.src = `./Playlist/${file}`; // Update audio source
+                audio.src = `./Playlist/${songName}`; // Update audio source
                 audio.play(); // Play the selected song
                 playPauseBtn.innerHTML = '<i class="bi bi-pause-fill"></i>'; // Update button text to 'Pause'
             });
@@ -151,7 +156,13 @@ addPlaylistBtn.addEventListener('click', () => {
 
             // Update the title bar to indicate the song was added
             document.title = 'Song Added: ' + songName;
-        });
+
+            // Remove the listener after the download is handled
+            window.electron.ipcRenderer.removeListener('download-complete', downloadCompleteHandler);
+        };
+
+        // Use ipcRenderer.on instead of once, and remove the listener after it is called
+        window.electron.ipcRenderer.on('download-complete', downloadCompleteHandler);
 
         // Clear the input field
         youtubeLinkInput.value = '';

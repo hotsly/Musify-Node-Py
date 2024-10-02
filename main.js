@@ -78,9 +78,21 @@ app.whenReady().then(() => {
             }
             console.log(`stdout: ${stdout}`);
 
-            // Notify the renderer process that the download is complete
-            const downloadedFileName = stdout.trim(); // Get the downloaded file name from stdout
-            event.reply('download-complete', downloadedFileName); // Send the file name to the renderer process
+            // After the download is complete, read the playlist directory again
+            const playlistDir = path.join(__dirname, 'Playlist');
+            fs.readdir(playlistDir, (err, files) => {
+                if (err) throw err;
+
+                const audioFiles = files.filter(file => 
+                    file.endsWith('.mp3') || 
+                    file.endsWith('.webm') || 
+                    file.endsWith('.m4a') || 
+                    file.endsWith('.wav') 
+                );
+
+                // Notify the renderer process with the updated playlist
+                mainWindow.webContents.send('load-playlist', audioFiles);
+            });
         });
     });
 });
