@@ -13,6 +13,11 @@ def download_audio(youtube_url, output_path='.\\Playlist'):
         'audioformat': 'mp3',  # Default format
         'outtmpl': os.path.join(output_path, '%(title)s.%(ext)s'),
         'noplaylist': True,
+        'postprocessors': [{  # Use ffmpeg to convert the audio format
+            'key': 'FFmpegExtractAudio',
+            'preferredcodec': 'mp3',  # Ensure the audio is in MP3 format
+            'preferredquality': '192',  # Quality setting
+        }],
     }
 
     try:

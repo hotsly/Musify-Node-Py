@@ -66,6 +66,7 @@ app.whenReady().then(() => {
         const scriptPath = path.join(__dirname, 'downloader.py');
         const command = `python "${scriptPath}" "${youtubeLink}"`;
 
+        // Execute the command asynchronously
         exec(command, (error, stdout, stderr) => {
             if (error) {
                 console.error(`Error: ${error.message}`);
@@ -77,18 +78,9 @@ app.whenReady().then(() => {
             }
             console.log(`stdout: ${stdout}`);
 
-            // After downloading, you can refresh the playlist or update the UI
-            fs.readdir(playlistDir, (err, files) => {
-                if (err) throw err;
-
-                const audioFiles = files.filter(file => 
-                    file.endsWith('.mp3') || 
-                    file.endsWith('.webm') || 
-                    file.endsWith('.m4a') || 
-                    file.endsWith('.wav')
-                );
-                mainWindow.webContents.send('load-playlist', audioFiles);
-            });
+            // Notify the renderer process that the download is complete
+            const downloadedFileName = stdout.trim(); // Get the downloaded file name from stdout
+            event.reply('download-complete', downloadedFileName); // Send the file name to the renderer process
         });
     });
 });
