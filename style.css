@@ -1,10 +1,16 @@
 body {
   background-color: #121212; /* Dark background */
   color: #e0e0e0; /* Lighter text color */
+  font-size: 0.9rem; /* Smaller base font size */
 }
 
 h2, h3 {
-  margin-top: 20px; /* Spacing for headings */
+  margin-top: 10px; /* Reduced spacing for headings */
+}
+
+#main-container {
+  max-width: 300px; /* Set a maximum width for the container */
+  width: 100%; /* Ensure it takes the full width up to max-width */
 }
 
 .btn-primary {
@@ -29,6 +35,8 @@ h2, h3 {
   background-color: #1e1e1e; /* Dark background for list items */
   border: none; /* No border for list items */
   color: #e0e0e0; /* Lighter text for list items */
+  font-size: 0.8rem; /* Smaller font size for playlist items */
+  padding: 4px; /* Smaller padding for list items */
 }
 
 .list-group-item:hover {
@@ -38,11 +46,12 @@ h2, h3 {
 /* Custom styles for the seek bar */
 #seek-bar {
   accent-color: #007bff; /* Custom color for the seek bar */
+  height: 5px; /* Reduced height for the seek bar */
 }
 
 /* Custom Scrollbar Styles for entire app */
 ::-webkit-scrollbar {
-  width: 8px; /* Width of the scrollbar */
+  width: 6px; /* Width of the scrollbar */
 }
 
 ::-webkit-scrollbar-track {
@@ -67,20 +76,25 @@ html {
 
 /* Scrollable Playlist Styles */
 .scrollable-playlist {
-  max-height: 300px; /* Set a maximum height for the scrollable area */
+  max-height: 200px; /* Set a maximum height for the scrollable area */
   overflow-y: auto; /* Enable vertical scrolling */
   border: 1px solid #444; /* Border for better visibility */
   border-radius: 5px; /* Slight rounding of corners */
-  padding: 10px; /* Padding for inner spacing */
+  padding: 5px; /* Reduced padding for inner spacing */
 }
 
 /* General Styles */
 .song-item {
   cursor: pointer; /* Pointer cursor on hover */
-  padding: 5px 10px; /* Padding for song items */
+  padding: 3px 6px; /* Smaller padding for song items */
   border-radius: 4px; /* Rounded corners for song items */
 }
 
 .song-item:hover {
   background-color: #444; /* Highlight on hover */
+}
+
+#volume {
+  width: 70px; /* Adjust width as necessary */
+  display: none; /* Start hidden */
 }

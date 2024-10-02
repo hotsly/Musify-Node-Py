@@ -10,43 +10,41 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body class="bg-dark text-light">
-    <div class="container mt-4">
-        <div class="mb-4">
+    <div class="container mt-3" id="main-container">
+        <div class="mb-3">
             <!-- Hidden audio element -->
             <audio id="audio" class="w-100"></audio>
         
             <!-- Custom controls -->
             <div class="d-flex align-items-center justify-content-center">
-                <button id="prev" class="btn btn-primary mx-2">
+                <button id="prev" class="btn btn-primary mx-1 btn-sm">
                     <i class="bi bi-skip-backward-fill"></i>
                 </button>
-                <button id="play-pause" class="btn btn-primary mx-2">
+                <button id="play-pause" class="btn btn-primary mx-1 btn-sm">
                     <i class="bi bi-play-fill"></i>
                 </button>
-                <button id="next" class="btn btn-primary mx-2">
+                <button id="next" class="btn btn-primary mx-1 btn-sm">
                     <i class="bi bi-skip-forward-fill"></i>
                 </button>
-                <input type="range" id="seek-bar" value="0" class="form-control-range mx-2" style="width: 200px;">
-            </div>
-            
-            <!-- Volume control -->
-            <div class="d-flex align-items-center justify-content-center mt-3">
-                <label for="volume" class="mr-2">Volume:</label>
-                <input type="range" id="volume" min="0" max="100" value="100" class="form-control-range mx-2" style="width: 200px;">
+                <input type="range" id="seek-bar" value="0" class="form-control-range mx-1" style="width: 80px;">
+                <button id="volume-btn" class="btn btn-secondary mx-1 btn-sm" title="Volume">
+                    <i class="bi bi-volume-up-fill"></i>
+                </button>
+                <input type="range" id="volume" min="0" max="100" value="100" class="form-control-range mx-1" style="width: 70px; display: none;">
             </div>
         </div>
         
         <h3>Add to Playlist</h3>
-        <div class="input-group mb-3">
-            <input type="text" id="youtube-link" class="form-control" placeholder="Enter YouTube URL">
+        <div class="input-group mb-2">
+            <input type="text" id="youtube-link" class="form-control form-control-sm" placeholder="Enter YouTube URL">
             <div class="input-group-append">
-                <button id="add-playlist-btn" class="btn btn-success">Add to Playlist</button>
+                <button id="add-playlist-btn" class="btn btn-success btn-sm">Add</button>
             </div>
         </div>
 
-        <h2>Playlist</h2>
+        <h2 class="h5">Playlist</h2>
         <!-- Scrollable playlist container -->
-        <div id="song-list" class="list-group mb-4 scrollable-playlist"></div>
+        <div id="song-list" class="list-group mb-3 scrollable-playlist"></div>
     </div>
 
     <!-- Bootstrap JS (optional for dropdowns, modals, etc.) -->

@@ -5,13 +5,13 @@ const songList = document.getElementById('song-list');
 const prevBtn = document.getElementById('prev');
 const nextBtn = document.getElementById('next');
 const volumeControl = document.getElementById('volume');
+const volumeBtn = document.getElementById('volume-btn');
 
 // Playlist elements
 const youtubeLinkInput = document.getElementById('youtube-link');
 const addPlaylistBtn = document.getElementById('add-playlist-btn');
 
 let isSeeking = false;
-// Variable to keep track of the current song index
 let currentSongIndex = 0;
 let audioFiles = []; // Store the list of audio files
 
@@ -106,6 +106,16 @@ playPauseBtn.addEventListener('click', () => {
     }
 });
 
+// Volume button functionality
+volumeBtn.addEventListener('click', () => {
+    // Toggle the volume control's visibility
+    if (volumeControl.style.display === 'none' || volumeControl.style.display === '') {
+        volumeControl.style.display = 'block';
+    } else {
+        volumeControl.style.display = 'none';
+    }
+});
+
 // Volume control functionality
 volumeControl.addEventListener('input', () => {
     const volume = volumeControl.value;
@@ -120,33 +130,25 @@ addPlaylistBtn.addEventListener('click', () => {
     console.log(`YouTube Link entered: ${youtubeLink}`); // Debugging log
 
     if (youtubeLink) {
-        // Create a new song item for the loading state
         const loadingItem = document.createElement('div');
         loadingItem.textContent = 'Loading...'; // Set the loading text
         loadingItem.className = 'list-group-item disabled'; // Add a disabled class for styling
         loadingItem.style.pointerEvents = 'none'; // Disable click events on this item
         songList.appendChild(loadingItem); // Add the loading item to the playlist
 
-        // Show a message in the title bar to indicate adding new songs
         document.title = 'Adding New Songs...';
 
-        // Send the YouTube URL to the main process for downloading
         window.electron.ipcRenderer.send('download-youtube-audio', youtubeLink);
 
-        // Define a function to handle the download completion
         const downloadCompleteHandler = (event, file) => {
-            // Remove the loading item
             songList.removeChild(loadingItem);
 
-            // Ensure the file path is correctly formed
             const songName = file.split('/').pop(); // Get the file name with extension
 
-            // Check if the file is really downloaded
             const songItem = document.createElement('div');
             songItem.textContent = songName; // Use the full file name
             songItem.className = 'list-group-item'; // Updated to use list group item
 
-            // Make the new song clickable after download completes
             songItem.addEventListener('click', () => {
                 audio.src = `./Playlist/${songName}`; // Update audio source
                 audio.play(); // Play the selected song
@@ -154,17 +156,13 @@ addPlaylistBtn.addEventListener('click', () => {
             });
             songList.appendChild(songItem); // Add song item to the list
 
-            // Update the title bar to indicate the song was added
             document.title = 'Song Added: ' + songName;
 
-            // Remove the listener after the download is handled
             window.electron.ipcRenderer.removeListener('download-complete', downloadCompleteHandler);
         };
 
-        // Use ipcRenderer.on instead of once, and remove the listener after it is called
         window.electron.ipcRenderer.on('download-complete', downloadCompleteHandler);
 
-        // Clear the input field
         youtubeLinkInput.value = '';
     } else {
         alert('Please enter a valid YouTube URL.');
@@ -179,13 +177,11 @@ function playSongByIndex(index) {
         audio.play(); // Play the selected song
         playPauseBtn.innerHTML = '<i class="bi bi-pause-fill"></i>'; // Change button to pause
 
-        // Listen for the end of the current song to play the next one
         audio.onended = () => {
             currentSongIndex++;
             playSongByIndex(currentSongIndex); // Play the next song
         };
     } else {
-        // Reset the index after the last song has finished
         currentSongIndex = 0;
         playPauseBtn.innerHTML = '<i class="bi bi-play-fill"></i>'; // Reset button to play
     }
@@ -196,7 +192,6 @@ window.electron.ipcRenderer.on('load-playlist', (audioFiles) => {
     songList.innerHTML = ''; // Clear previous song list
 
     audioFiles.forEach(file => {
-        // Remove the file extension from the song name
         const songName = file.split('.').slice(0, -1).join('.'); // Split and join to get the name without the extension
 
         const songItem = document.createElement('div');
