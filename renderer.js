@@ -29,7 +29,7 @@ audio.addEventListener('timeupdate', () => {
 });
 
 audio.addEventListener('ended', () => {
-    playPauseBtn.textContent = 'Play';
+    playPauseBtn.innerHTML = '<i class="bi bi-play-fill"></i>';
 });
 
 // Seek bar events
@@ -45,7 +45,7 @@ seekBar.addEventListener('mouseup', () => {
     isSeeking = false;
     audio.currentTime = seekBar.value;
     audio.play();
-    playPauseBtn.textContent = 'Pause';
+    playPauseBtn.innerHTML = '<i class="bi bi-pause-fill"></i>';
 });
 
 // Play/Pause button functionality
@@ -91,7 +91,7 @@ window.electron.ipcRenderer.on('load-playlist', (audioFiles) => {
         songItem.addEventListener('click', () => {
             audio.src = `./Playlist/${file}`; // Update audio source
             audio.play(); // Play the selected song
-            playPauseBtn.textContent = 'Pause'; // Update button text to 'Pause'
+            playPauseBtn.innerHTML = '<i class="bi bi-pause-fill"></i>'; // Update button text to 'Pause'
         });
         songList.appendChild(songItem); // Add song item to the list
     });
