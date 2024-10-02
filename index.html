@@ -8,15 +8,25 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="player">
-        <h1>Music Player</h1>
-        <audio id="audio" src="" preload="metadata"></audio>
-        <input type="range" id="seek-bar" value="0" step="1" />
-        <div>
-            <button id="play-pause">Play</button>
-        </div>
-        <div id="song-list" class="song-list"></div> <!-- Container for song list -->
+    <h1>Music Player</h1>
+    
+    <div id="controls">
+        <audio id="audio" controls></audio>
+        <input type="range" id="seek-bar" value="0">
+        <button id="play-pause">Play</button>
     </div>
+
+    <div id="playlist-container">
+        <h2>Playlist</h2>
+        <div id="song-list"></div>
+    </div>
+
+    <!-- Add Search Bar and Add to Playlist Button -->
+    <div id="add-playlist">
+        <input type="text" id="youtube-link" placeholder="Enter YouTube URL">
+        <button id="add-playlist-btn">Add to Playlist</button>
+    </div>
+
     <script src="renderer.js"></script>
 </body>
 </html>

@@ -1,13 +1,18 @@
 import os
 import yt_dlp as youtube_dl
+import sys
+import re
+
+def is_valid_url(url):
+    return re.match(r'https?://(www\.)?youtube\.com/watch\?v=|https?://youtu\.be/', url) is not None
 
 def download_audio(youtube_url, output_path='.\\Playlist'):
     ydl_opts = {
         'format': 'bestaudio/best',
-        'extractaudio': True,  # Download audio only
-        'audioformat': 'mp3',  # Save as mp3 format
-        'outtmpl': os.path.join(output_path, '%(title)s.%(ext)s'),  # Save as file with video title
-        'noplaylist': True,  # Download only the single video
+        'extractaudio': True,
+        'audioformat': 'mp3',  # Default format
+        'outtmpl': os.path.join(output_path, '%(title)s.%(ext)s'),
+        'noplaylist': True,
     }
 
     try:
@@ -19,5 +24,12 @@ def download_audio(youtube_url, output_path='.\\Playlist'):
         print(f'An error occurred: {e}')
 
 if __name__ == '__main__':
-    youtube_link = input('Enter the YouTube video URL: ')
-    download_audio(youtube_link)
+    if len(sys.argv) > 1:
+        youtube_link = sys.argv[1]
+        
+        if not is_valid_url(youtube_link):
+            youtube_link = f"ytsearch:{youtube_link}"
+
+        download_audio(youtube_link)
+    else:
+        print('Please provide a YouTube URL or search term.')

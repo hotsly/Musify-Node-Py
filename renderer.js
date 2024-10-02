@@ -4,6 +4,10 @@ const seekBar = document.getElementById('seek-bar');
 const playPauseBtn = document.getElementById('play-pause');
 const songList = document.getElementById('song-list');
 
+// Playlist elements
+const youtubeLinkInput = document.getElementById('youtube-link');
+const addPlaylistBtn = document.getElementById('add-playlist-btn');
+
 let isSeeking = false;
 
 audio.addEventListener('loadedmetadata', () => {
@@ -44,6 +48,19 @@ playPauseBtn.addEventListener('click', () => {
     } else {
         audio.pause();
         playPauseBtn.textContent = 'Play';
+    }
+});
+
+// Add YouTube link to playlist
+addPlaylistBtn.addEventListener('click', () => {
+    const youtubeLink = youtubeLinkInput.value.trim();
+    console.log(`YouTube Link entered: ${youtubeLink}`); // Debugging log
+
+    if (youtubeLink) {
+        window.electron.ipcRenderer.send('download-youtube-audio', youtubeLink);  // Send the YouTube URL to the main process
+        console.log(`Sent to main process: ${youtubeLink}`); // Debugging log
+    } else {
+        alert('Please enter a valid YouTube URL.');
     }
 });
 
