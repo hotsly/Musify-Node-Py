@@ -10,29 +10,13 @@ const addPlaylistBtn = document.getElementById('add-playlist-btn');
 
 let isSeeking = false;
 
-// Ensure this runs after the DOM is fully loaded
-window.onload = async () => {
-    try {
-        const volume = await window.electron.ipcRenderer.invoke('get-volume');
-        console.log('Retrieved volume:', volume); // Debugging log
-
-        // Check if volume is a number and within expected range
-        if (typeof volume === 'number' && volume >= 0 && volume <= 100) {
-            audio.volume = volume / 100; // Set audio volume to the saved value
-            volumeControl.value = volume; // Set the slider to the saved value
-            console.log('Initialized volume:', volume); // Debugging log
-        } else {
-            console.warn('Invalid volume value, using default volume 100');
-            audio.volume = 1; // Default to max volume if there's an issue
-            volumeControl.value = 100; // Reset to default
-        }
-    } catch (error) {
-        console.error('Error retrieving volume:', error);
-        // Handle error gracefully, e.g., default to max volume
-        audio.volume = 1;
-        volumeControl.value = 100; // Reset to default
-    }
-};
+// Load the volume setting from settings.json on startup
+(async () => {
+    const volume = await window.electron.ipcRenderer.invoke('get-volume');
+    audio.volume = volume / 100; // Set audio volume to the saved value
+    volumeControl.value = volume; // Set the slider to the saved value
+    console.log('Initialized volume:', volume); // Debugging log
+})();
 
 audio.addEventListener('loadedmetadata', () => {
     seekBar.max = Math.floor(audio.duration);
@@ -68,10 +52,10 @@ seekBar.addEventListener('mouseup', () => {
 playPauseBtn.addEventListener('click', () => {
     if (audio.paused) {
         audio.play();
-        playPauseBtn.textContent = 'Pause';
+        playPauseBtn.innerHTML = '<i class="bi bi-pause-fill"></i>'; // Change to pause icon
     } else {
         audio.pause();
-        playPauseBtn.textContent = 'Play';
+        playPauseBtn.innerHTML = '<i class="bi bi-play-fill"></i>'; // Change to play icon
     }
 });
 
