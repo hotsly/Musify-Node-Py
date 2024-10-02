@@ -18,6 +18,26 @@ function createWindow() {
     });
 
     mainWindow.loadFile('index.html');
+
+    // Read volume setting from settings.json
+    ipcMain.handle('get-volume', () => {
+        const settingsPath = path.join(__dirname, 'settings.json');
+        if (fs.existsSync(settingsPath)) {
+            const settings = JSON.parse(fs.readFileSync(settingsPath, 'utf8'));
+            console.log(`Loaded volume: ${settings.volume || 100}`); // Debugging log
+            return settings.volume || 100; // Default volume is 100
+        }
+        console.log('No settings found, using default volume 100'); // Debugging log
+        return 100; // Default volume
+    });
+
+    // Save volume setting to settings.json
+    ipcMain.on('set-volume', (event, volume) => {
+        const settingsPath = path.join(__dirname, 'settings.json');
+        const settings = { volume };
+        fs.writeFileSync(settingsPath, JSON.stringify(settings, null, 2)); // Save with pretty format
+        console.log(`Volume set to ${volume} and saved to settings.json`); // Log the saved volume
+    });
 }
 
 app.whenReady().then(() => {

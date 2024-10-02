@@ -1,14 +1,38 @@
-// renderer.js
 const audio = document.getElementById('audio');
 const seekBar = document.getElementById('seek-bar');
 const playPauseBtn = document.getElementById('play-pause');
 const songList = document.getElementById('song-list');
+const volumeControl = document.getElementById('volume'); // Ensure this matches your HTML
 
 // Playlist elements
 const youtubeLinkInput = document.getElementById('youtube-link');
 const addPlaylistBtn = document.getElementById('add-playlist-btn');
 
 let isSeeking = false;
+
+// Ensure this runs after the DOM is fully loaded
+window.onload = async () => {
+    try {
+        const volume = await window.electron.ipcRenderer.invoke('get-volume');
+        console.log('Retrieved volume:', volume); // Debugging log
+
+        // Check if volume is a number and within expected range
+        if (typeof volume === 'number' && volume >= 0 && volume <= 100) {
+            audio.volume = volume / 100; // Set audio volume to the saved value
+            volumeControl.value = volume; // Set the slider to the saved value
+            console.log('Initialized volume:', volume); // Debugging log
+        } else {
+            console.warn('Invalid volume value, using default volume 100');
+            audio.volume = 1; // Default to max volume if there's an issue
+            volumeControl.value = 100; // Reset to default
+        }
+    } catch (error) {
+        console.error('Error retrieving volume:', error);
+        // Handle error gracefully, e.g., default to max volume
+        audio.volume = 1;
+        volumeControl.value = 100; // Reset to default
+    }
+};
 
 audio.addEventListener('loadedmetadata', () => {
     seekBar.max = Math.floor(audio.duration);
@@ -51,6 +75,14 @@ playPauseBtn.addEventListener('click', () => {
     }
 });
 
+// Volume control functionality
+volumeControl.addEventListener('input', () => {
+    const volume = volumeControl.value;
+    audio.volume = volumeControl.value / 100; // Set volume (0.0 to 1.0)
+    window.electron.ipcRenderer.send('set-volume', volume); // Save volume to settings.json
+    console.log('Volume changed to:', volume); // Debugging log
+});
+
 // Add YouTube link to playlist
 addPlaylistBtn.addEventListener('click', () => {
     const youtubeLink = youtubeLinkInput.value.trim();
@@ -71,7 +103,7 @@ window.electron.ipcRenderer.on('load-playlist', (audioFiles) => {
     audioFiles.forEach(file => {
         const songItem = document.createElement('div');
         songItem.textContent = file;
-        songItem.className = 'song-item';
+        songItem.className = 'list-group-item'; // Updated to use list group item
         songItem.addEventListener('click', () => {
             audio.src = `./Playlist/${file}`; // Update audio source
             audio.play(); // Play the selected song

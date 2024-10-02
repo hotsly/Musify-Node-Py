@@ -1,33 +1,86 @@
-/* style.css */
 body {
-  font-family: Arial, sans-serif;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  background-color: #282c34;
-  color: white;
+  background-color: #121212; /* Dark background */
+  color: #e0e0e0; /* Lighter text color */
 }
 
-.player {
-  text-align: center;
+h2, h3 {
+  margin-top: 20px; /* Spacing for headings */
 }
 
-input[type="range"] {
-  width: 100%;
+.btn-primary {
+  background-color: #007bff; /* Bootstrap primary color */
+  border: none; /* No border for buttons */
 }
 
-.song-list {
-  max-height: 200px;
-  overflow-y: auto;
-  margin-top: 20px;
+.btn-primary:hover {
+  background-color: #0056b3; /* Darker shade on hover */
 }
 
+.btn-success {
+  background-color: #28a745; /* Green button color */
+  border: none; /* No border for buttons */
+}
+
+.btn-success:hover {
+  background-color: #218838; /* Darker shade on hover */
+}
+
+.list-group-item {
+  background-color: #1e1e1e; /* Dark background for list items */
+  border: none; /* No border for list items */
+  color: #e0e0e0; /* Lighter text for list items */
+}
+
+.list-group-item:hover {
+  background-color: #292b2c; /* Slightly lighter on hover */
+}
+
+/* Custom styles for the seek bar */
+#seek-bar {
+  accent-color: #007bff; /* Custom color for the seek bar */
+}
+
+/* Custom Scrollbar Styles for entire app */
+::-webkit-scrollbar {
+  width: 8px; /* Width of the scrollbar */
+}
+
+::-webkit-scrollbar-track {
+  background: #222; /* Background color of the track */
+  border-radius: 5px; /* Rounded corners for the track */
+}
+
+::-webkit-scrollbar-thumb {
+  background: #555; /* Background color of the handle */
+  border-radius: 5px; /* Rounded corners for the handle */
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #777; /* Change color on hover */
+}
+
+/* Firefox */
+html {
+  scrollbar-width: thin; /* Use a thin scrollbar */
+  scrollbar-color: #555 #222; /* Handle color and track color */
+}
+
+/* Scrollable Playlist Styles */
+.scrollable-playlist {
+  max-height: 300px; /* Set a maximum height for the scrollable area */
+  overflow-y: auto; /* Enable vertical scrolling */
+  border: 1px solid #444; /* Border for better visibility */
+  border-radius: 5px; /* Slight rounding of corners */
+  padding: 10px; /* Padding for inner spacing */
+}
+
+/* General Styles */
 .song-item {
-  padding: 10px;
-  cursor: pointer;
+  cursor: pointer; /* Pointer cursor on hover */
+  padding: 5px 10px; /* Padding for song items */
+  border-radius: 4px; /* Rounded corners for song items */
 }
 
 .song-item:hover {
-  background-color: #444;
+  background-color: #444; /* Highlight on hover */
 }
