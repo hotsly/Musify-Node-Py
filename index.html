@@ -54,7 +54,14 @@
 
         <h2 class="h5">Playlist</h2>
         <!-- Scrollable playlist container -->
-        <div id="song-list" class="list-group mb-3 scrollable-playlist"></div>
+        <div id="playlist-container" style="position: relative;">
+            <button id="play-all-btn" class="play-all-button">
+                <i class="bi bi-play-fill"></i> <!-- Using Bootstrap Icons for play icon -->
+            </button>
+            <div id="song-list" class="list-group mb-3 scrollable-playlist">
+                <!-- Existing song items will be populated here -->
+            </div>
+        </div>
     </div>
 
     <!-- Bootstrap JS (optional for dropdowns, modals, etc.) -->

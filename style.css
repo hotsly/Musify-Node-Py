@@ -100,10 +100,23 @@ html {
 /* Scrollable Playlist Styles */
 .scrollable-playlist {
   max-height: 200px; /* Set a maximum height for the scrollable area */
-  overflow-y: auto; /* Enable vertical scrolling */
+  overflow-y: scroll; /* Allow vertical scrolling */
   border: 1px solid #444; /* Border for better visibility */
   border-radius: 5px; /* Slight rounding of corners */
-  padding: 5px; /* Reduced padding for inner spacing */
+  padding: 10px; /* Padding for inner spacing */
+}
+
+
+/* Hide scrollbar for WebKit browsers */
+.scrollable-playlist::-webkit-scrollbar {
+  width: 0; /* Hide the scrollbar */
+  background: transparent; /* Optional: set a transparent background */
+}
+
+/* Hide scrollbar for Firefox */
+.scrollable-playlist {
+  scrollbar-width: none; /* For Firefox */
+  -ms-overflow-style: none; /* For Internet Explorer and Edge */
 }
 
 /* General Styles */
@@ -131,4 +144,40 @@ html {
 #shuffle-btn,
 #volume-btn {
   margin-right: 5px;
+}
+
+#song-list {
+  position: relative; /* Allows the play-all button to be positioned relative to this container */
+  max-height: 200px; /* Set a maximum height for the scrollable area */
+  overflow-y: auto; /* Enable vertical scrolling */
+  border: 1px solid #444; /* Border for better visibility */
+  border-radius: 5px; /* Slight rounding of corners */
+  padding: 10px; /* Add padding for inner spacing to avoid overlap */
+}
+
+.play-all-button {
+  position: absolute; /* Position it absolutely within the playlist container */
+  top: 0; /* Align to the top */
+  right: 0; /* Align to the right */
+  width: 30px; /* Set a smaller width for the button */
+  height: 30px; /* Set a smaller height for the button */
+  border-radius: 50%; /* Make it circular */
+  background-color: #007bff; /* Button background color */
+  color: white; /* Icon color */
+  border: none; /* No border */
+  cursor: pointer; /* Pointer cursor on hover */
+  display: flex; /* Use flexbox to center the icon */
+  justify-content: center; /* Center horizontally */
+  align-items: center; /* Center vertically */
+  z-index: 10; /* Ensure it overlaps on top of other elements */
+  transition: background-color 0.3s; /* Smooth transition for background color */
+}
+
+.play-all-button:hover {
+  background-color: #0056b3; /* Darker blue on hover */
+}
+
+#playlist-container {
+  position: relative; /* Establish a positioning context for the button */
+  max-width: 300px; /* Optional: Set max-width if needed */
 }

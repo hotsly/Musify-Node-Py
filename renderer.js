@@ -10,6 +10,7 @@ const youtubeLinkInput = document.getElementById('youtube-link');
 const addPlaylistBtn = document.getElementById('add-playlist-btn');
 const shuffleBtn = document.getElementById('shuffle-btn');
 
+let isShuffling = false; // Track shuffle state
 let isSeeking = false;
 let currentSongIndex = 0;
 let audioFiles = []; // Store the list of audio files
@@ -21,6 +22,11 @@ let audioFiles = []; // Store the list of audio files
     volumeControl.value = volume; // Set the slider to the saved value
     console.log('Initialized volume:', volume); // Debugging log
 })();
+
+// Function to get a random index from the audioFiles array
+function getRandomSongIndex() {
+    return Math.floor(Math.random() * audioFiles.length);
+}
 
 // Load the playlist and populate the UI
 window.electron.ipcRenderer.on('load-playlist', (files) => {
@@ -52,21 +58,27 @@ shuffleBtn.addEventListener('click', () => {
 
 // Next button functionality
 nextBtn.addEventListener('click', () => {
-    if (currentSongIndex < audioFiles.length - 1) {
-        currentSongIndex++; // Move to the next song
-        loadSong(currentSongIndex); // Load the next song
-        audio.play(); // Play the next song immediately
-        playPauseBtn.innerHTML = '<i class="bi bi-pause-fill"></i>'; // Change to pause icon
+    if (isShuffling) {
+        currentSongIndex = getRandomSongIndex(); // Get a random song index
+    } else {
+        if (currentSongIndex < audioFiles.length - 1) {
+            currentSongIndex++; // Move to the next song
+        } else {
+            currentSongIndex = 0; // Reset to the first song
+        }
     }
+    loadSong(currentSongIndex); // Load the selected song
+    audio.play(); // Play the song immediately
+    playPauseBtn.innerHTML = '<i class="bi bi-pause-fill"></i>'; // Change to pause icon
 });
 
-// Previous button functionality
+// Previous button functionality (remains the same)
 prevBtn.addEventListener('click', () => {
     if (currentSongIndex > 0) {
         currentSongIndex--; // Move to the previous song
         loadSong(currentSongIndex); // Load the previous song
         audio.play(); // Play the previous song immediately
-        playPauseBtn.innerHTML = '<i class="bi bi-pause-fill"></i>'; // Change to pause icon
+        playPauseBtn.innerHTML = '<i class="bi bi-pause-fill"></i>'; // Change button to pause
     }
 });
 
@@ -80,17 +92,20 @@ audio.addEventListener('timeupdate', () => {
     }
 });
 
+// When audio ends, automatically play the next song
 audio.addEventListener('ended', () => {
-    if (currentSongIndex < audioFiles.length - 1) {
-        currentSongIndex++; // Move to the next song
-        loadSong(currentSongIndex); // Load the next song
-        audio.play(); // Play the next song
-        playPauseBtn.innerHTML = '<i class="bi bi-pause-fill"></i>'; // Change button to pause
+    if (isShuffling) {
+        currentSongIndex = getRandomSongIndex(); // Get a random song index
     } else {
-        // Reset to the first song
-        currentSongIndex = 0; 
-        loadSong(currentSongIndex); 
+        if (currentSongIndex < audioFiles.length - 1) {
+            currentSongIndex++; // Move to the next song
+        } else {
+            currentSongIndex = 0; // Reset to the first song
+        }
     }
+    loadSong(currentSongIndex); // Load the selected song
+    audio.play(); // Play the next song
+    playPauseBtn.innerHTML = '<i class="bi bi-pause-fill"></i>'; // Change button to pause
 });
 
 // Seek bar events
@@ -201,7 +216,6 @@ function playSongByIndex(index) {
     }
 }
 
-// Function to receive playlist from main process
 window.electron.ipcRenderer.on('load-playlist', (audioFiles) => {
     songList.innerHTML = ''; // Clear previous song list
 
@@ -217,5 +231,22 @@ window.electron.ipcRenderer.on('load-playlist', (audioFiles) => {
             playPauseBtn.innerHTML = '<i class="bi bi-pause-fill"></i>'; // Update button text to 'Pause'
         });
         songList.appendChild(songItem); // Add song item to the list
+    });
+
+    
+    // Re-add the play button after the song items
+    const playAllBtn = document.createElement('button');
+    playAllBtn.id = 'play-all-btn';
+    playAllBtn.className = 'play-all-button';
+    playAllBtn.innerHTML = '<i class="bi bi-play-fill"></i>'; // Play icon
+
+    // Update the click event to play a random song
+    playAllBtn.addEventListener('click', () => {
+        if (audioFiles.length > 0) {
+            currentSongIndex = getRandomSongIndex(); // Get a random song index
+            loadSong(currentSongIndex); // Load the random song
+            audio.play(); // Play the random song
+            playPauseBtn.innerHTML = '<i class="bi bi-pause-fill"></i>'; // Change to pause icon
+        }
     });
 });
