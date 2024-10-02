@@ -8,11 +8,11 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": "",
   "devDependencies": {
     "electron": "^32.1.2"
   },
   "dependencies": {
     "musify": "file:"
-  }
+  },
+  "description": ""
 }
