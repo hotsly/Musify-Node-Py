@@ -124,6 +124,18 @@ app.whenReady().then(() => {
     });
 });
 
+// Handle the delete-file request
+ipcMain.handle('delete-file', async (event, fileName) => {
+    const filePath = path.join(__dirname, 'Playlist', fileName); // Construct the file path
+
+    try {
+        await fs.promises.unlink(filePath); // Delete the file
+        console.log(`Deleted file: ${filePath}`);
+    } catch (error) {
+        console.error(`Error deleting file: ${error}`);
+    }
+});
+
 app.on('window-all-closed', () => {
     if (process.platform !== 'darwin') app.quit();
 });

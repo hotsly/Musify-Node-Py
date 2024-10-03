@@ -202,7 +202,6 @@ volumeControl.addEventListener('input', () => {
     console.log('Volume changed to:', volume); // Debugging log
 });
 
-// Add YouTube link to playlist
 addPlaylistBtn.addEventListener('click', () => {
     const youtubeLink = youtubeLinkInput.value.trim();
     console.log(`YouTube Link entered: ${youtubeLink}`); // Debugging log
@@ -220,22 +219,56 @@ addPlaylistBtn.addEventListener('click', () => {
 
         const downloadCompleteHandler = (event, file) => {
             songList.removeChild(loadingItem);
-
+        
             const songName = file.split('/').pop(); // Get the file name with extension
-
+        
             const songItem = document.createElement('div');
-            songItem.textContent = songName; // Use the full file name
-            songItem.className = 'list-group-item'; // Updated to use list group item
+            songItem.className = 'list-group-item d-flex justify-content-between align-items-center'; // Use Bootstrap classes for alignment
+        
+            const songTitle = document.createElement('span');
+            songTitle.textContent = songName; // Use the full file name
+        
+            // Create remove button
+            const removeBtn = document.createElement('button'); // Ensure removeBtn is defined here
+            removeBtn.innerHTML = '<i class="bi bi-x-circle"></i>'; // Remove button design
+            removeBtn.className = 'btn btn-link'; // Bootstrap button link style
+            removeBtn.onclick = async () => {
+                const result = confirm(`Are you sure you want to remove ${songName}?`); // Confirm before deleting
+                if (result) {
+                    // Check if the song being removed is currently playing
+                    if (audio.src.endsWith(file)) {
+                        audio.pause(); // Pause the audio if the current song is being removed
+                        playPauseBtn.innerHTML = '<i class="bi bi-play-fill"></i>'; // Change button to play icon
+                    }
 
-            songItem.addEventListener('click', () => {
-                audio.src = `./Playlist/${songName}`; // Update audio source
-                audio.play(); // Play the selected song
-                playPauseBtn.innerHTML = '<i class="bi bi-pause-fill"></i>'; // Update button text to 'Pause'
-            });
+                    songList.removeChild(songItem); // Remove the song item from the list
+
+                    // Send a request to the main process to delete the file
+                    await window.electron.ipcRenderer.invoke('delete-file', file);
+                    
+                    // Update audioFiles and load a new song if needed
+                    audioFiles = audioFiles.filter(item => item !== file); // Update the global audioFiles array
+
+                    // Check if the current song index is valid
+                    if (currentSongIndex >= audioFiles.length) {
+                        currentSongIndex = 0; // Reset to the first song if the index is out of bounds
+                    }
+
+                    // Load the next song if one exists
+                    if (audioFiles.length > 0) {
+                        loadSong(currentSongIndex);
+                        audio.play(); // Play the next song if one exists
+                    }
+                }
+            };
+        
+            // Append title and button to the song item
+            songItem.appendChild(songTitle);
+            songItem.appendChild(removeBtn); // Make sure to append it here
             songList.appendChild(songItem); // Add song item to the list
-
+        
             document.title = 'Song Added: ' + songName;
-
+        
             window.electron.ipcRenderer.removeListener('download-complete', downloadCompleteHandler);
         };
 
@@ -268,18 +301,66 @@ function playSongByIndex(index) {
 window.electron.ipcRenderer.on('load-playlist', (audioFiles) => {
     songList.innerHTML = ''; // Clear previous song list
 
-    audioFiles.forEach(file => {
-        const songName = file.split('.').slice(0, -1).join('.'); // Split and join to get the name without the extension
+    audioFiles.forEach((file, index) => {
+        const songName = file.split('.').slice(0, -1).join('.'); // Get song name without the extension
 
         const songItem = document.createElement('div');
-        songItem.textContent = songName; // Use the song name without the extension
-        songItem.className = 'list-group-item'; // Updated to use list group item
+        songItem.className = 'list-group-item d-flex justify-content-between align-items-center'; // Use Bootstrap classes for alignment
+
+        const songTitle = document.createElement('span');
+        songTitle.textContent = songName; // Display song name
+
+        // Create remove button
+        const removeBtn = document.createElement('button');
+        removeBtn.innerHTML = '<i class="bi bi-x-circle"></i>'; // Remove button design
+        removeBtn.className = 'btn btn-link'; // Bootstrap button link style
+
+        removeBtn.onclick = async () => {
+            const result = confirm(`Are you sure you want to remove ${songName}?`); // Confirm before deleting
+            if (result) {
+                // Check if the song being removed is currently playing
+                if (audio.src.endsWith(file)) {
+                    audio.pause(); // Pause the audio if the current song is being removed
+                    playPauseBtn.innerHTML = '<i class="bi bi-play-fill"></i>'; // Change button to play icon
+                    audio.src = ''; // Reset audio source to prevent playback of a non-existent file
+                }
+
+                songList.removeChild(songItem); // Remove the song item from the list
+
+                // Send a request to the main process to delete the file
+                await window.electron.ipcRenderer.invoke('delete-file', file);
+
+                // Update the global audioFiles array by filtering out the removed song
+                audioFiles = audioFiles.filter(item => item !== file); // Update audioFiles array
+
+                // Check if currentSongIndex is the last song and reset if necessary
+                if (currentSongIndex >= audioFiles.length) {
+                    currentSongIndex = audioFiles.length - 1; // Move to the last song if current is out of bounds
+                }
+
+                // If there are songs left, load the new current song
+                if (audioFiles.length > 0) {
+                    loadSong(currentSongIndex);
+                    audio.play(); // Play the next song if one exists
+                } else {
+                    audio.src = ''; // If no songs are left, reset audio source
+                    playPauseBtn.innerHTML = '<i class="bi bi-play-fill"></i>'; // Set play button since there's no song to play
+                }
+            }
+        };
+
+        // Append title and button to the song item
+        songItem.appendChild(songTitle);
+        songItem.appendChild(removeBtn);
+        songList.appendChild(songItem); // Add song item to the list
+
+        // Add click event to play the song
         songItem.addEventListener('click', () => {
             audio.src = `./Playlist/${file}`; // Update audio source
             audio.play(); // Play the selected song
-            playPauseBtn.innerHTML = '<i class="bi bi-pause-fill"></i>'; // Update button text to 'Pause'
+            playPauseBtn.innerHTML = '<i class="bi bi-pause-fill"></i>'; // Change button to pause
+            currentSongIndex = index; // Set currentSongIndex to the newly played song index
         });
-        songList.appendChild(songItem); // Add song item to the list
     });
 });
 
