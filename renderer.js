@@ -14,6 +14,7 @@ let isShuffling = false; // Track shuffle state
 let isSeeking = false;
 let currentSongIndex = 0;
 let audioFiles = []; // Store the list of audio files
+let lastSongIndex = -1; // Store the index of the last played song
 
 // Load the volume setting from settings.json on startup
 (async () => {
@@ -25,7 +26,15 @@ let audioFiles = []; // Store the list of audio files
 
 // Function to get a random index from the audioFiles array
 function getRandomSongIndex() {
-    return Math.floor(Math.random() * audioFiles.length);
+    let randomIndex;
+
+    // Ensure that the new random index is not the same as the last song index
+    do {
+        randomIndex = Math.floor(Math.random() * audioFiles.length);
+    } while (randomIndex === lastSongIndex);
+
+    lastSongIndex = randomIndex; // Update lastSongIndex to the current random one
+    return randomIndex;
 }
 
 // Load the playlist and populate the UI
@@ -41,20 +50,22 @@ function loadSong(index) {
     audio.src = `./Playlist/${audioFiles[index]}`; // Set audio source
 }
 
-shuffleBtn.classList.add('inactive'); // Set default to inactive
+// Shuffle button functionality
 shuffleBtn.addEventListener('click', () => {
     if (shuffleBtn.classList.contains('active')) {
-      shuffleBtn.classList.remove('active');
-      shuffleBtn.classList.add('inactive');
-      shuffleBtn.style.backgroundColor = '#6c757d'; // Set gray background
-      console.log("inactive")
+        shuffleBtn.classList.remove('active');
+        shuffleBtn.classList.add('inactive');
+        shuffleBtn.style.backgroundColor = '#6c757d'; // Set gray background
+        isShuffling = false; // Disable shuffle mode
+        console.log("Shuffle deactivated");
     } else {
-      shuffleBtn.classList.remove('inactive');
-      shuffleBtn.classList.add('active');
-      shuffleBtn.style.backgroundColor = '#007bff'; // Set blue background
-      console.log("active")
+        shuffleBtn.classList.remove('inactive');
+        shuffleBtn.classList.add('active');
+        shuffleBtn.style.backgroundColor = '#007bff'; // Set blue background
+        isShuffling = true; // Enable shuffle mode
+        console.log("Shuffle activated");
     }
-  });
+});
 
 // Next button functionality
 nextBtn.addEventListener('click', () => {
@@ -232,21 +243,15 @@ window.electron.ipcRenderer.on('load-playlist', (audioFiles) => {
         });
         songList.appendChild(songItem); // Add song item to the list
     });
+});
 
-    
-    // Re-add the play button after the song items
-    const playAllBtn = document.createElement('button');
-    playAllBtn.id = 'play-all-btn';
-    playAllBtn.className = 'play-all-button';
-    playAllBtn.innerHTML = '<i class="bi bi-play-fill"></i>'; // Play icon
-
-    // Update the click event to play a random song
-    playAllBtn.addEventListener('click', () => {
-        if (audioFiles.length > 0) {
-            currentSongIndex = getRandomSongIndex(); // Get a random song index
-            loadSong(currentSongIndex); // Load the random song
-            audio.play(); // Play the random song
-            playPauseBtn.innerHTML = '<i class="bi bi-pause-fill"></i>'; // Change to pause icon
-        }
-    });
+// Attach event listener to the existing Play All button
+const playAllBtn = document.getElementById('play-all-btn');
+playAllBtn.addEventListener('click', () => {
+    if (audioFiles.length > 0) {
+        currentSongIndex = getRandomSongIndex(); // Get a random song index
+        loadSong(currentSongIndex); // Load the random song
+        audio.play(); // Play the song
+        playPauseBtn.innerHTML = '<i class="bi bi-pause-fill"></i>'; // Change button to pause icon
+    }
 });

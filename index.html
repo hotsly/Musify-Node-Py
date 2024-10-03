@@ -33,7 +33,7 @@
             
                 <!-- Shuffle and Volume Controls - Side by side -->
                 <div class="d-flex align-items-center justify-content-center">
-                    <button id="shuffle-btn" class="btn btn-secondary btn-sm mx-1 shuffle-btn" title="Shuffle">
+                    <button id="shuffle-btn" class="btn btn-secondary btn-sm mx-1 shuffle-btn inactive" title="Shuffle">
                         <i class="bi bi-shuffle"></i>
                     </button>
                     <button id="volume-btn" class="btn btn-secondary btn-sm mx-1" title="Volume">
@@ -55,13 +55,13 @@
         <h2 class="h5">Playlist</h2>
         <!-- Scrollable playlist container -->
         <div id="playlist-container" style="position: relative;">
-            <button id="play-all-btn" class="play-all-button">
-                <i class="bi bi-play-fill"></i> <!-- Using Bootstrap Icons for play icon -->
-            </button>
             <div id="song-list" class="list-group mb-3 scrollable-playlist">
-                <!-- Existing song items will be populated here -->
+                <!-- Songs will be added here dynamically -->
             </div>
-        </div>
+            <button id="play-all-btn" class="play-all-button">
+                <i class="bi bi-play-fill"></i> <!-- Bootstrap Play Icon -->
+            </button>
+        </div>        
     </div>
 
     <!-- Bootstrap JS (optional for dropdowns, modals, etc.) -->
