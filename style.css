@@ -70,6 +70,7 @@ h3 {
 #seek-bar {
   accent-color: #007bff; /* Custom color for the seek bar */
   height: 5px; /* Reduced height for the seek bar */
+  margin-bottom: 10px; /* Space between seek bar and playback controls */
 }
 
 /* Custom Scrollbar Styles for entire app */
@@ -105,7 +106,6 @@ html {
   border-radius: 5px; /* Slight rounding of corners */
   padding: 10px; /* Padding for inner spacing */
 }
-
 
 /* Hide scrollbar for WebKit browsers */
 .scrollable-playlist::-webkit-scrollbar {
@@ -180,4 +180,16 @@ html {
 #playlist-container {
   position: relative; /* Establish a positioning context for the button */
   max-width: 300px; /* Optional: Set max-width if needed */
+}
+
+/* Custom Add Button Style */
+#add-playlist-btn {
+  background-color: #007bff; /* Blue background */
+  color: #fff; /* White text */
+  border: none; /* No border */
+  transition: background-color 0.3s; /* Smooth transition */
+}
+
+#add-playlist-btn:hover {
+  background-color: #0056b3; /* Darker blue on hover */
 }

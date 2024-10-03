@@ -17,6 +17,9 @@
         
             <!-- Custom controls -->
             <div class="d-flex flex-column align-items-center justify-content-center">
+                <!-- Seek Bar -->
+                <input type="range" id="seek-bar" value="0" class="form-control-range mx-1 seekbar" style="width: 120px;">
+
                 <!-- Playback Controls -->
                 <div class="d-flex align-items-center justify-content-center mb-2">
                     <button id="prev" class="btn btn-primary btn-sm mx-1">
@@ -28,11 +31,6 @@
                     <button id="next" class="btn btn-primary btn-sm mx-1">
                         <i class="bi bi-skip-forward-fill"></i>
                     </button>
-                    <input type="range" id="seek-bar" value="0" class="form-control-range mx-1 seekbar" style="width: 120px;">
-                </div>
-            
-                <!-- Shuffle and Volume Controls - Side by side -->
-                <div class="d-flex align-items-center justify-content-center">
                     <button id="shuffle-btn" class="btn btn-secondary btn-sm mx-1 shuffle-btn" title="Shuffle">
                         <i class="bi bi-shuffle"></i>
                     </button>
@@ -41,7 +39,7 @@
                     </button>
                     <input type="range" id="volume" min="0" max="100" value="100" class="form-control-range volume-range mx-1" style="width: 80px; display: none;">
                 </div>
-            </div>                                   
+            </div>                              
         </div>
         
         <h3>Add to Playlist</h3>
