@@ -233,34 +233,30 @@ addPlaylistBtn.addEventListener('click', () => {
             removeBtn.innerHTML = '<i class="bi bi-x-circle"></i>'; // Remove button design
             removeBtn.className = 'btn btn-link'; // Bootstrap button link style
             removeBtn.onclick = async () => {
-                const result = confirm(`Are you sure you want to remove ${songName}?`); // Confirm before deleting
-                if (result) {
-                    // Check if the song being removed is currently playing
-                    if (audio.src.endsWith(file)) {
-                        audio.pause(); // Pause the audio if the current song is being removed
-                        playPauseBtn.innerHTML = '<i class="bi bi-play-fill"></i>'; // Change button to play icon
-                    }
-
-                    songList.removeChild(songItem); // Remove the song item from the list
-
-                    // Send a request to the main process to delete the file
-                    await window.electron.ipcRenderer.invoke('delete-file', file);
-                    
-                    // Update audioFiles and load a new song if needed
-                    audioFiles = audioFiles.filter(item => item !== file); // Update the global audioFiles array
-
-                    // Check if the current song index is valid
-                    if (currentSongIndex >= audioFiles.length) {
-                        currentSongIndex = 0; // Reset to the first song if the index is out of bounds
-                    }
-
-                    // Load the next song if one exists
-                    if (audioFiles.length > 0) {
-                        loadSong(currentSongIndex);
-                        audio.play(); // Play the next song if one exists
-                    }
+                // Check if the song being removed is currently playing
+                if (audio.src.endsWith(file)) {
+                    audio.pause(); // Pause the audio if the current song is being removed
+                    playPauseBtn.innerHTML = '<i class="bi bi-play-fill"></i>'; // Change button to play icon
                 }
-            };
+            
+                songList.removeChild(songItem); // Remove the song item from the list
+                // Send a request to the main process to delete the file
+                await window.electron.ipcRenderer.invoke('delete-file', file);
+                
+                // Update audioFiles and load a new song if needed
+                audioFiles = audioFiles.filter(item => item !== file); // Update the global audioFiles array
+            
+                // Check if the current song index is valid
+                if (currentSongIndex >= audioFiles.length) {
+                    currentSongIndex = 0; // Reset to the first song if the index is out of bounds
+                }
+            
+                // Load the next song if one exists
+                if (audioFiles.length > 0) {
+                    loadSong(currentSongIndex);
+                    audio.play(); // Play the next song if one exists
+                }
+            };            
         
             // Append title and button to the song item
             songItem.appendChild(songTitle);
@@ -316,38 +312,30 @@ window.electron.ipcRenderer.on('load-playlist', (audioFiles) => {
         removeBtn.className = 'btn btn-link'; // Bootstrap button link style
 
         removeBtn.onclick = async () => {
-            const result = confirm(`Are you sure you want to remove ${songName}?`); // Confirm before deleting
-            if (result) {
-                // Check if the song being removed is currently playing
-                if (audio.src.endsWith(file)) {
-                    audio.pause(); // Pause the audio if the current song is being removed
-                    playPauseBtn.innerHTML = '<i class="bi bi-play-fill"></i>'; // Change button to play icon
-                    audio.src = ''; // Reset audio source to prevent playback of a non-existent file
-                }
-
-                songList.removeChild(songItem); // Remove the song item from the list
-
-                // Send a request to the main process to delete the file
-                await window.electron.ipcRenderer.invoke('delete-file', file);
-
-                // Update the global audioFiles array by filtering out the removed song
-                audioFiles = audioFiles.filter(item => item !== file); // Update audioFiles array
-
-                // Check if currentSongIndex is the last song and reset if necessary
-                if (currentSongIndex >= audioFiles.length) {
-                    currentSongIndex = audioFiles.length - 1; // Move to the last song if current is out of bounds
-                }
-
-                // If there are songs left, load the new current song
-                if (audioFiles.length > 0) {
-                    loadSong(currentSongIndex);
-                    audio.play(); // Play the next song if one exists
-                } else {
-                    audio.src = ''; // If no songs are left, reset audio source
-                    playPauseBtn.innerHTML = '<i class="bi bi-play-fill"></i>'; // Set play button since there's no song to play
-                }
+            // Check if the song being removed is currently playing
+            if (audio.src.endsWith(file)) {
+                audio.pause(); // Pause the audio if the current song is being removed
+                playPauseBtn.innerHTML = '<i class="bi bi-play-fill"></i>'; // Change button to play icon
             }
-        };
+        
+            songList.removeChild(songItem); // Remove the song item from the list
+            // Send a request to the main process to delete the file
+            await window.electron.ipcRenderer.invoke('delete-file', file);
+            
+            // Update audioFiles and load a new song if needed
+            audioFiles = audioFiles.filter(item => item !== file); // Update the global audioFiles array
+        
+            // Check if the current song index is valid
+            if (currentSongIndex >= audioFiles.length) {
+                currentSongIndex = 0; // Reset to the first song if the index is out of bounds
+            }
+        
+            // Load the next song if one exists
+            if (audioFiles.length > 0) {
+                loadSong(currentSongIndex);
+                audio.play(); // Play the next song if one exists
+            }
+        };        
 
         // Append title and button to the song item
         songItem.appendChild(songTitle);
