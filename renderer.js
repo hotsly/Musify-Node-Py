@@ -15,6 +15,8 @@ let isSeeking = false;
 let currentSongIndex = 0;
 let audioFiles = []; // Store the list of audio files
 let lastSongIndex = -1; // Store the index of the last played song
+let songHistory = []; // Array to keep track of the history of played songs
+let historyIndex = -1; // Index to track the current position in the history stack
 
 // Load the volume setting from settings.json on startup
 (async () => {
@@ -48,6 +50,19 @@ window.electron.ipcRenderer.on('load-playlist', (files) => {
 function loadSong(index) {
     if (index < 0 || index >= audioFiles.length) return; // Boundary check
     audio.src = `./Playlist/${audioFiles[index]}`; // Set audio source
+
+    // Update song history
+    if (historyIndex === -1 || songHistory[historyIndex] !== index) {
+        // If history is empty or the current song is different from the last one
+        songHistory.push(index); // Add the current song index to history
+
+        // Limit the history to the last 10 songs
+        if (songHistory.length > 10) {
+            songHistory.shift(); // Remove the oldest song if limit exceeded
+        } else {
+            historyIndex++; // Move to the new end of the history stack
+        }
+    }
 }
 
 // Shuffle button functionality
@@ -83,10 +98,11 @@ nextBtn.addEventListener('click', () => {
     playPauseBtn.innerHTML = '<i class="bi bi-pause-fill"></i>'; // Change to pause icon
 });
 
-// Previous button functionality (remains the same)
+// Previous button functionality
 prevBtn.addEventListener('click', () => {
-    if (currentSongIndex > 0) {
-        currentSongIndex--; // Move to the previous song
+    if (historyIndex > 0) {
+        historyIndex--; // Move back in the history stack
+        currentSongIndex = songHistory[historyIndex]; // Get the previous song index
         loadSong(currentSongIndex); // Load the previous song
         audio.play(); // Play the previous song immediately
         playPauseBtn.innerHTML = '<i class="bi bi-pause-fill"></i>'; // Change button to pause
