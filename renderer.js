@@ -18,6 +18,27 @@ let lastSongIndex = -1; // Store the index of the last played song
 let songHistory = []; // Array to keep track of the history of played songs
 let historyIndex = -1; // Index to track the current position in the history stack
 
+async function saveShuffleState() {
+    await window.electron.ipcRenderer.send('set-shuffle', isShuffling);
+    console.log('Shuffle state saved:', isShuffling);
+}
+
+// Function to load the shuffle state from settings.json
+(async () => {
+    isShuffling = await window.electron.ipcRenderer.invoke('get-shuffle');
+    // Set the button's state based on the loaded shuffle state
+    if (isShuffling) {
+        shuffleBtn.classList.add('active');
+        shuffleBtn.classList.remove('inactive');
+        shuffleBtn.style.backgroundColor = '#007bff'; // Set blue background
+    } else {
+        shuffleBtn.classList.remove('active');
+        shuffleBtn.classList.add('inactive');
+        shuffleBtn.style.backgroundColor = '#6c757d'; // Set gray background
+    }
+    console.log('Initialized shuffle state:', isShuffling); // Debugging log
+})();
+
 // Load the volume setting from settings.json on startup
 (async () => {
     const volume = await window.electron.ipcRenderer.invoke('get-volume');
@@ -66,7 +87,7 @@ function loadSong(index) {
 }
 
 // Shuffle button functionality
-shuffleBtn.addEventListener('click', () => {
+shuffleBtn.addEventListener('click', async () => {
     if (shuffleBtn.classList.contains('active')) {
         shuffleBtn.classList.remove('active');
         shuffleBtn.classList.add('inactive');
@@ -80,6 +101,7 @@ shuffleBtn.addEventListener('click', () => {
         isShuffling = true; // Enable shuffle mode
         console.log("Shuffle activated");
     }
+    await saveShuffleState(); // Save the shuffle state to settings.json
 });
 
 // Next button functionality

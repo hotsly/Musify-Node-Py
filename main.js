@@ -6,6 +6,22 @@ const { exec } = require('child_process');
 
 let mainWindow;
 
+// Function to load settings from settings.json
+function loadSettings() {
+    const settingsPath = path.join(__dirname, 'settings.json');
+    if (fs.existsSync(settingsPath)) {
+        return JSON.parse(fs.readFileSync(settingsPath, 'utf8'));
+    }
+    return {};
+}
+
+// Function to save settings to settings.json
+function saveSettings(settings) {
+    const settingsPath = path.join(__dirname, 'settings.json');
+    fs.writeFileSync(settingsPath, JSON.stringify(settings, null, 2)); // Save with pretty format
+}
+
+// Main create window function
 function createWindow() {
     mainWindow = new BrowserWindow({
         width: 360,
@@ -23,22 +39,31 @@ function createWindow() {
 
     // Read volume setting from settings.json
     ipcMain.handle('get-volume', () => {
-        const settingsPath = path.join(__dirname, 'settings.json');
-        if (fs.existsSync(settingsPath)) {
-            const settings = JSON.parse(fs.readFileSync(settingsPath, 'utf8'));
-            console.log(`Loaded volume: ${settings.volume || 100}`); // Debugging log
-            return settings.volume || 100; // Default volume is 100
-        }
-        console.log('No settings found, using default volume 100'); // Debugging log
-        return 100; // Default volume
+        const settings = loadSettings();
+        console.log(`Loaded volume: ${settings.volume || 100}`); // Debugging log
+        return settings.volume || 100; // Default volume is 100
     });
 
     // Save volume setting to settings.json
     ipcMain.on('set-volume', (event, volume) => {
-        const settingsPath = path.join(__dirname, 'settings.json');
-        const settings = { volume };
-        fs.writeFileSync(settingsPath, JSON.stringify(settings, null, 2)); // Save with pretty format
+        const settings = loadSettings(); // Load existing settings
+        settings.volume = volume; // Update volume
+        saveSettings(settings); // Save the updated settings
         console.log(`Volume set to ${volume} and saved to settings.json`); // Log the saved volume
+    });
+
+    // New: Get shuffle state
+    ipcMain.handle('get-shuffle', () => {
+        const settings = loadSettings();
+        return settings.isShuffling || false; // Return saved shuffle state or false if undefined
+    });
+
+    // New: Set shuffle state
+    ipcMain.on('set-shuffle', (event, isShuffling) => {
+        const settings = loadSettings(); // Load existing settings
+        settings.isShuffling = isShuffling; // Update the shuffle state
+        saveSettings(settings); // Save the updated settings
+        console.log(`Shuffle state set to ${isShuffling} and saved to settings.json`); // Log the saved shuffle state
     });
 }
 
