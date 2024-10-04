@@ -1,10 +1,10 @@
-// main.js
-const { app, BrowserWindow, ipcMain } = require('electron');
+const { app, BrowserWindow, ipcMain, Tray, Menu } = require('electron');
 const path = require('path');
 const fs = require('fs');
 const { exec } = require('child_process');
 
 let mainWindow;
+let tray = null;
 
 // Function to load settings from settings.json
 function loadSettings() {
@@ -28,6 +28,7 @@ function createWindow() {
         height: 500,
         resizable: false,
         autoHideMenuBar: true,
+        icon: 'tray-icon.ico',
         webPreferences: {
             preload: path.join(__dirname, 'preload.js'),
             contextIsolation: true,
@@ -65,10 +66,65 @@ function createWindow() {
         saveSettings(settings); // Save the updated settings
         console.log(`Shuffle state set to ${isShuffling} and saved to settings.json`); // Log the saved shuffle state
     });
+
+    // Minimize the app to the tray when the main window is closed
+    mainWindow.on('close', (event) => {
+        event.preventDefault(); // Prevent the window from closing
+        mainWindow.hide(); // Hide the window instead
+    });
+}
+
+// Create a tray icon
+function createTray() {
+    const trayIcon = './tray-icon.ico'; // Replace with your own icon path
+    tray = new Tray(trayIcon);
+    
+    // Create a context menu for the tray icon
+    const contextMenu = Menu.buildFromTemplate([
+        {
+            label: 'Show',
+            click: () => {
+                // Show the main window
+                if (mainWindow.isMinimized()) {
+                    mainWindow.restore();
+                }
+                mainWindow.show();
+                mainWindow.focus();
+                mainWindow.setVisibleOnAllWorkspaces(true);
+                mainWindow.setSkipTaskbar(false);
+                mainWindow.webContents.send('show-window');
+            }
+        },
+        {
+            label: 'Exit',
+            click: () => {
+                // Quit the app
+                app.quit();
+                process.exit(0);
+            }
+        }
+    ]);
+    
+    // Set the context menu for the tray icon
+    tray.setContextMenu(contextMenu);
+    
+    // Add a click event listener to the tray icon
+    tray.on('click', () => {
+        // Show the main window
+        if (mainWindow.isMinimized()) {
+            mainWindow.restore();
+        }
+        mainWindow.show();
+        mainWindow.focus();
+        mainWindow.setVisibleOnAllWorkspaces(true);
+        mainWindow.setSkipTaskbar(false);
+        mainWindow.webContents.send('show-window');
+    });
 }
 
 app.whenReady().then(() => {
     createWindow();
+    createTray();
 
     const playlistDir = path.join(__dirname, 'Playlist');
     fs.readdir(playlistDir, (err, files) => {
@@ -95,7 +151,7 @@ app.whenReady().then(() => {
 
         // Execute the command asynchronously
         exec(command, (error, stdout, stderr) => {
-            if (error) {
+            if ( error) {
                 console.error(`Error: ${error.message}`);
                 return;
             }
@@ -137,9 +193,18 @@ ipcMain.handle('delete-file', async (event, fileName) => {
 });
 
 app.on('window-all-closed', () => {
-    if (process.platform !== 'darwin') app.quit();
+    if (process.platform !== 'darwin') {
+        app.quit();
+    }
 });
 
 app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow();
+});
+
+app.on('before-quit', () => {
+    // Hide the main window instead of quitting
+    if (mainWindow) {
+        mainWindow.hide();
+    }
 });
