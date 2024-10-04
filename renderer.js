@@ -213,8 +213,6 @@ addPlaylistBtn.addEventListener('click', () => {
         loadingItem.style.pointerEvents = 'none'; // Disable click events on this item
         songList.appendChild(loadingItem); // Add the loading item to the playlist
 
-        document.title = 'Adding New Songs...';
-
         window.electron.ipcRenderer.send('download-youtube-audio', youtubeLink);
 
         const downloadCompleteHandler = (event, file) => {
@@ -262,8 +260,6 @@ addPlaylistBtn.addEventListener('click', () => {
             songItem.appendChild(songTitle);
             songItem.appendChild(removeBtn); // Make sure to append it here
             songList.appendChild(songItem); // Add song item to the list
-        
-            document.title = 'Song Added: ' + songName;
         
             window.electron.ipcRenderer.removeListener('download-complete', downloadCompleteHandler);
         };

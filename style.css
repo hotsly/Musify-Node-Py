@@ -119,15 +119,20 @@ html {
   -ms-overflow-style: none; /* For Internet Explorer and Edge */
 }
 
-/* General Styles */
 .song-item {
-  cursor: pointer; /* Pointer cursor on hover */
-  padding: 3px 6px; /* Smaller padding for song items */
-  border-radius: 4px; /* Rounded corners for song items */
+  display: flex; 
+  justify-content: space-between; 
+  align-items: center; 
+  background-color: rgba(255, 255, 255, 0.1); /* Light transparent background */
+  border: 1px solid rgba(255, 255, 255, 0.3); /* Subtle border */
+  border-radius: 5px; /* Rounded corners */
+  padding: 10px; /* Spacing */
+  margin: 5px 0; /* Spacing between items */
+  transition: background-color 0.3s; /* Smooth background change */
 }
 
 .song-item:hover {
-  background-color: #444; /* Highlight on hover */
+  background-color: rgba(255, 255, 255, 0.2); /* Darken on hover */
 }
 
 /* Volume control */
@@ -193,3 +198,31 @@ html {
 #add-playlist-btn:hover {
   background-color: #0056b3; /* Darker blue on hover */
 }
+
+.song-item-container {
+  padding: 10px;
+  border-radius: 5px;
+  margin-bottom: 10px;
+  transition: background-color 0.3s;
+}
+
+.song-item-container:hover {
+  background-color: rgba(0, 0, 0, 0.2); /* Darker on hover */
+}
+
+.song-title {
+  flex-grow: 1; /* Allow the title to take up remaining space */
+  color: #fff; /* Title color */
+  font-weight: bold; /* Make title bold */
+  font-size: 16px; /* Title font size */
+  padding: 0 10px; /* Padding around title */
+}
+
+.song-controls button {
+  transition: all 0.2s ease;
+}
+
+.song-controls button:hover {
+  transform: scale(1.1); /* Slight grow on hover */
+}
+
