@@ -70,7 +70,8 @@ h3 {
 #seek-bar {
   accent-color: #007bff; /* Custom color for the seek bar */
   height: 5px; /* Reduced height for the seek bar */
-  margin-bottom: 10px; /* Space between seek bar and playback controls */
+  width: 80%;
+  margin: 0 10px;
 }
 
 /* Custom Scrollbar Styles for entire app */
@@ -226,3 +227,21 @@ html {
   transform: scale(1.1); /* Slight grow on hover */
 }
 
+#duration-display {
+  float: left;
+}
+
+#duration-display {
+  margin-right: 10px;
+}
+
+#max-duration-display {
+  margin-left: 10px;
+}
+
+.seekbar-container {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}

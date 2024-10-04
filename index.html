@@ -18,8 +18,11 @@
             <!-- Custom controls -->
             <div class="d-flex flex-column align-items-center justify-content-center">
                 <!-- Seek Bar -->
-                <input type="range" id="seek-bar" value="0" class="form-control-range mx-1 seekbar" style="width: 120px;">
-                <span id="duration-display">0:00</span>
+                <div class="seekbar-container">
+                    <span id="duration-display">0:00</span>
+                    <input type="range" id="seek-bar" value="0" class="form-control-range mx-1 seekbar">
+                    <span id="max-duration-display">0:00</span>
+                </div>
 
                 <!-- Playback Controls -->
                 <div class="d-flex align-items-center justify-content-center mb-2">

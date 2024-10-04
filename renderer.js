@@ -94,6 +94,24 @@ function loadSong(index) {
     } else {
         playPauseBtn.innerHTML = '<i class="bi bi-pause-fill"></i>'; // Change to pause icon
     }
+
+    // Update duration display
+    const durationDisplay = document.getElementById('duration-display');
+    const maxDurationDisplay = document.getElementById('max-duration-display');
+    
+    audio.addEventListener('loadedmetadata', () => {
+        const duration = audio.duration;
+        const minutes = Math.floor(duration / 60);
+        const seconds = Math.floor(duration % 60);
+        maxDurationDisplay.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+    });
+    
+    audio.addEventListener('timeupdate', () => {
+        const currentTime = audio.currentTime;
+        const minutes = Math.floor(currentTime / 60);
+        const seconds = Math.floor(currentTime % 60);
+        durationDisplay.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+    });
 }
 
 function playNextSong() {
@@ -147,6 +165,7 @@ shuffleBtn.addEventListener('click', async () => {
         shuffleBtn.classList.add('inactive');
         shuffleBtn.style.backgroundColor = '#6c757d';
         isShuffling = false;
+        playedSongs = [];
     } else {
         shuffleBtn.classList.remove('inactive');
         shuffleBtn.classList.add('active');
@@ -155,7 +174,6 @@ shuffleBtn.addEventListener('click', async () => {
     }
     // Improvement 8: Use await when calling saveShuffleState
     await saveShuffleState();
-    playedSongs = [];
 });
 
 // Improvement 3: Wrap around to first song when reaching the end in non-shuffle mode
