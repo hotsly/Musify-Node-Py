@@ -145,9 +145,9 @@ app.whenReady().then(() => {
     ipcMain.on('download-youtube-audio', (event, youtubeLink) => {
         console.log(`Downloading audio from: ${youtubeLink}`);
 
-        // Run the Python script with the YouTube link
-        const scriptPath = path.join(__dirname, 'downloader.py');
-        const command = `python "${scriptPath}" "${youtubeLink}"`;
+        // Run the executable file with the YouTube link
+        const executablePath = path.join(__dirname, 'bin\\downloader.exe');
+        const command = `"${executablePath}" "${youtubeLink}"`;
 
         // Execute the command asynchronously
         exec(command, (error, stdout, stderr) => {
