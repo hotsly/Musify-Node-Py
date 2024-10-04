@@ -7,3 +7,4 @@ Build/
 dist
 settings.json
 downloader.spec
+bin/
