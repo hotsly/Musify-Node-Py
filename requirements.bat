@@ -12,15 +12,17 @@ source .venv/bin/activate
 echo "Installing Python packages (yt_dlp)..."
 pip install yt-dlp
 
-# Step 4: Initialize npm and install electron
-echo "Initializing npm and installing electron..."
-npm init -y
+# Step 4: Initialize npm
+echo "Initializing npm..."
+npm init -y || { echo "npm init failed"; exit 1; }
 
-npm install electron
+# Step 5: Install electron
+echo "Installing electron..."
+npm install electron || { echo "npm install electron failed"; exit 1; }
 
-# Step 5: Set up Git username and email
+# Step 6: Set up Git username and email
 echo "Setting up Git username and email..."
-git config --global user.name "Bien Garcia"
-git config --global user.email "garciabien11@gmail.com"
+git config --global user.name "Your Name"
+git config --global user.email "your.email@example.com"
 
 echo "Setup completed successfully!"
