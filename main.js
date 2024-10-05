@@ -127,6 +127,10 @@ app.whenReady().then(() => {
     createTray();
 
     const playlistDir = path.join(__dirname, 'Playlist');
+    if (!fs.existsSync(playlistDir)) {
+        fs.mkdirSync(playlistDir);
+        console.log('Playlist folder created');
+    }
     fs.readdir(playlistDir, (err, files) => {
         if (err) throw err;
 

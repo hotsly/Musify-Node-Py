@@ -1,5 +1,5 @@
 # run "powershell -ExecutionPolicy Bypass -File .\requirements.ps1" to install the requirements.
-
+# run pyinstaller --onefile --distpath bin downloader.py
 
 # Step 1: Create Python virtual environment (.venv)
 Write-Host "Creating Python virtual environment..."
