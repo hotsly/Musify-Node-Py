@@ -10,3 +10,4 @@ downloader.spec
 bin/
 package-lock.json
 package.json
+settings.json
