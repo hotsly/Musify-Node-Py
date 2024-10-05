@@ -5,9 +5,10 @@ ffmpeg-master-latest-win64-gpl-shared/
 request.py
 Build/
 dist
-settings.json
 downloader.spec
 bin/
 package-lock.json
 package.json
 settings.json
+out/
+forge.config.js
