@@ -8,3 +8,5 @@ dist
 settings.json
 downloader.spec
 bin/
+package-lock.json
+package.json
