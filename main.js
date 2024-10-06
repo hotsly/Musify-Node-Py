@@ -5,15 +5,32 @@ const { exec } = require('child_process');
 
 // Define paths as variables
 const ROOT_DIR = __dirname;
-const SETTINGS_FILE = path.join(ROOT_DIR, 'settings.json');
+const RESOURCES_DIR = path.join(ROOT_DIR, 'resources');
+const SETTINGS_FILE = path.join(RESOURCES_DIR, 'settings.json');
 const PRELOAD_FILE = path.join(ROOT_DIR, 'preload.js');
 const INDEX_FILE = 'index.html';
-const TRAY_ICON = './tray-icon.ico';
+const TRAY_ICON = path.join(RESOURCES_DIR, 'tray-icon.ico');
 const PLAYLIST_DIR = path.join(ROOT_DIR, 'Playlist');
-const EXECUTABLE_PATH = path.join(ROOT_DIR, 'bin\\downloader.exe');
+const EXECUTABLE_PATH = path.join(RESOURCES_DIR, 'downloader.exe');
 
 let mainWindow;
 let tray = null;
+
+// Create resources directory if it doesn't exist
+if (!fs.existsSync(RESOURCES_DIR)) {
+    fs.mkdirSync(RESOURCES_DIR);
+    console.log('Resources folder created');
+}
+
+// Create settings.json file if it doesn't exist
+if (!fs.existsSync(SETTINGS_FILE)) {
+    const defaultSettings = {
+        volume: 100,
+        isShuffling: false
+    };
+    fs.writeFileSync(SETTINGS_FILE, JSON.stringify(defaultSettings, null, 2));
+    console.log('Settings file created');
+}
 
 // Function to load settings from settings.json
 function loadSettings() {
@@ -94,7 +111,7 @@ function createTray() {
                 if (mainWindow.isMinimized()) {
                     mainWindow.restore();
                 }
-                mainWindow.show();
+ mainWindow.show();
                 mainWindow.focus();
                 mainWindow.setVisibleOnAllWorkspaces(true);
                 mainWindow.setSkipTaskbar(false);
