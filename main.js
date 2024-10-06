@@ -3,22 +3,29 @@ const path = require('path');
 const fs = require('fs');
 const { exec } = require('child_process');
 
+// Define paths as variables
+const ROOT_DIR = __dirname;
+const SETTINGS_FILE = path.join(ROOT_DIR, 'settings.json');
+const PRELOAD_FILE = path.join(ROOT_DIR, 'preload.js');
+const INDEX_FILE = 'index.html';
+const TRAY_ICON = './tray-icon.ico';
+const PLAYLIST_DIR = path.join(ROOT_DIR, 'Playlist');
+const EXECUTABLE_PATH = path.join(ROOT_DIR, 'bin\\downloader.exe');
+
 let mainWindow;
 let tray = null;
 
 // Function to load settings from settings.json
 function loadSettings() {
-    const settingsPath = path.join(__dirname, 'settings.json');
-    if (fs.existsSync(settingsPath)) {
-        return JSON.parse(fs.readFileSync(settingsPath, 'utf8'));
+    if (fs.existsSync(SETTINGS_FILE)) {
+        return JSON.parse(fs.readFileSync(SETTINGS_FILE, 'utf8'));
     }
     return {};
 }
 
 // Function to save settings to settings.json
 function saveSettings(settings) {
-    const settingsPath = path.join(__dirname, 'settings.json');
-    fs.writeFileSync(settingsPath, JSON.stringify(settings, null, 2)); // Save with pretty format
+    fs.writeFileSync(SETTINGS_FILE, JSON.stringify(settings, null, 2)); // Save with pretty format
 }
 
 // Main create window function
@@ -28,15 +35,15 @@ function createWindow() {
         height: 500,
         resizable: false,
         autoHideMenuBar: true,
-        icon: 'tray-icon.ico',
+        icon: TRAY_ICON,
         webPreferences: {
-            preload: path.join(__dirname, 'preload.js'),
+            preload: PRELOAD_FILE,
             contextIsolation: true,
             enableRemoteModule: false,
         },
     });
 
-    mainWindow.loadFile('index.html');
+    mainWindow.loadFile(INDEX_FILE);
 
     // Read volume setting from settings.json
     ipcMain.handle('get-volume', () => {
@@ -76,8 +83,7 @@ function createWindow() {
 
 // Create a tray icon
 function createTray() {
-    const trayIcon = './tray-icon.ico'; // Replace with your own icon path
-    tray = new Tray(trayIcon);
+    tray = new Tray(TRAY_ICON);
     
     // Create a context menu for the tray icon
     const contextMenu = Menu.buildFromTemplate([
@@ -126,12 +132,11 @@ app.whenReady().then(() => {
     createWindow();
     createTray();
 
-    const playlistDir = path.join(__dirname, 'Playlist');
-    if (!fs.existsSync(playlistDir)) {
-        fs.mkdirSync(playlistDir);
+    if (!fs.existsSync(PLAYLIST_DIR)) {
+        fs.mkdirSync(PLAYLIST_DIR);
         console.log('Playlist folder created');
     }
-    fs.readdir(playlistDir, (err, files) => {
+    fs.readdir(PLAYLIST_DIR, (err, files) => {
         if (err) throw err;
 
         const audioFiles = files.filter(file => 
@@ -150,8 +155,7 @@ app.whenReady().then(() => {
         console.log(`Downloading audio from: ${youtubeLink}`);
 
         // Run the executable file with the YouTube link
-        const executablePath = path.join(__dirname, 'bin\\downloader.exe');
-        const command = `"${executablePath}" "${youtubeLink}"`;
+        const command = `"${EXECUTABLE_PATH}" "${youtubeLink}"`;
 
         // Execute the command asynchronously
         exec(command, (error, stdout, stderr) => {
@@ -166,8 +170,7 @@ app.whenReady().then(() => {
             console.log(`stdout: ${stdout}`);
 
             // After the download is complete, read the playlist directory again
-            const playlistDir = path.join(__dirname, 'Playlist');
-            fs.readdir(playlistDir, (err, files) => {
+            fs.readdir(PLAYLIST_DIR, (err, files) => {
                 if (err) throw err;
 
                 const audioFiles = files.filter(file => 
@@ -186,7 +189,7 @@ app.whenReady().then(() => {
 
 // Handle the delete-file request
 ipcMain.handle('delete-file', async (event, fileName) => {
-    const filePath = path.join(__dirname, 'Playlist', fileName); // Construct the file path
+    const filePath = path.join(PLAYLIST_DIR, fileName); // Construct the file path
 
     try {
         await fs.promises.unlink(filePath); // Delete the file

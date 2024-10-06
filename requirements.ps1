@@ -1,6 +1,10 @@
 # run "powershell -ExecutionPolicy Bypass -File .\requirements.ps1" to install the requirements.
 # run pyinstaller --onefile --distpath bin downloader.py
 
+# packing with electron forge
+# electron forge installation "npm install --save-dev @electron-forge/cli"
+# run "npx electron-forge import" to import forge in existing electron project
+
 # Step 1: Create Python virtual environment (.venv)
 Write-Host "Creating Python virtual environment..."
 python -m venv .venv
