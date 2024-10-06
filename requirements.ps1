@@ -25,10 +25,10 @@ npm init -y
 Write-Host "Installing electron..."
 npm install electron
 
-# Step 7: Set up Git username and email
-Write-Host "Setting up Git username and email..."
-git config --global user.name "Bien Garcia"
-git config --global user.email "garciabien11@gmail.com"
+# # Step 7: Set up Git username and email
+# Write-Host "Setting up Git username and email..."
+# git config --global user.name "Bien Garcia"
+# git config --global user.email "garciabien11@gmail.com"
 
 Write-Host "Setup completed successfully!"
 Write-Host 'Change "test": "echo \"Error: no test specified\" && exit 1" to "start": "electron ."'
