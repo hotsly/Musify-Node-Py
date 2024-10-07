@@ -74,20 +74,14 @@ function getRandomSongIndex() {
   return randomIndex;
 }
 
-// Receive the resourcePath
-window.electron.ipcRenderer.on('resource-path', (event, path) => {
-    playlistPath = path;
-});
-
 // Improvement 1: Update UI to reflect currently playing song
-function loadSong(index) {
-    if (!playlistPath) {
-        window.electron.ipcRenderer.send('get-resource-path');
-        return;
-    }
+async function loadSong(index) {
+    const playlistPath = await window.electron.ipcRenderer.invoke('get-playlist-path');
 
+    // Update the currently playing song in the UI
     if (index < 0 || index >= audioFiles.length) return;
         audio.src = `${playlistPath}\\${audioFiles[index]}`;
+        console.log(audio.src); // This will log the resourcePath
 
     // Update song history
     if (historyIndex === -1 || songHistory[historyIndex] !== index) {

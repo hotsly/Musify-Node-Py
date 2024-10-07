@@ -94,9 +94,7 @@ function createWindow() {
         console.log(`Shuffle state set to ${isShuffling} and saved to settings.json`); // Log the saved shuffle state
     });
 
-    ipcMain.on('get-resource-path', (event) => {
-        event.sender.send('resource-path', PLAYLIST_DIR);
-    });
+    ipcMain.handle('get-playlist-path', () => PLAYLIST_DIR);
 
     // Minimize the app to the tray when the main window is closed
     mainWindow.on('close', (event) => {
