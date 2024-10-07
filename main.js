@@ -3,6 +3,8 @@ const path = require('path');
 const fs = require('fs');
 const { exec } = require('child_process');
 
+if (require('electron-squirrel-startup')) app.quit();
+
 // Define paths as variables
 let ROOT_DIR
 let RESOURCES_DIR
