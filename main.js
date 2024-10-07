@@ -4,21 +4,20 @@ const fs = require('fs');
 const { exec } = require('child_process');
 
 // Define paths as variables
-const ROOT_DIR = __dirname;
-const RESOURCES_DIR = path.join(ROOT_DIR, 'resources');
+const RESOURCES_DIR = path.join('resources');
 const SETTINGS_FILE = path.join(RESOURCES_DIR, 'settings.json');
-const PRELOAD_FILE = path.join(ROOT_DIR, 'preload.js');
+const PRELOAD_FILE = 'preload.js';
 const INDEX_FILE = 'index.html';
 const TRAY_ICON = path.join(RESOURCES_DIR, 'tray-icon.ico');
-const PLAYLIST_DIR = path.join(ROOT_DIR, 'Playlist');
+const PLAYLIST_DIR = path.join(RESOURCES_DIR, 'Playlist');
 const EXECUTABLE_PATH = path.join(RESOURCES_DIR, 'downloader.exe');
 
 let mainWindow;
 let tray = null;
 
 // Create resources directory if it doesn't exist
-if (!fs.existsSync(RESOURCES_DIR)) {
-    fs.mkdirSync(RESOURCES_DIR);
+if (!fs.existsSync(PLAYLIST_DIR)) {
+    fs.mkdirSync(PLAYLIST_DIR);
     console.log('Resources folder created');
 }
 

@@ -1,5 +1,5 @@
 # run "powershell -ExecutionPolicy Bypass -File .\requirements.ps1" to install the requirements.
-# run pyinstaller --onefile --distpath bin downloader.py
+# run pyinstaller --onefile --distpath resources downloader.py
 
 # packing with electron forge
 # electron forge installation "npm install --save-dev @electron-forge/cli"
