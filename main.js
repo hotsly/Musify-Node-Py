@@ -4,22 +4,26 @@ const fs = require('fs');
 const { exec } = require('child_process');
 
 // Define paths as variables
-const RESOURCES_DIR = path.join('resources');
+let ROOT_DIR
+let RESOURCES_DIR
+if (app.isPackaged){
+    ROOT_DIR = app.getAppPath()
+    RESOURCES_DIR = process.resourcesPath
+}else{
+    ROOT_DIR = __dirname;
+    RESOURCES_DIR = path.join(ROOT_DIR, 'resources');
+}
+console.log(app.isPackaged)
+
 const SETTINGS_FILE = path.join(RESOURCES_DIR, 'settings.json');
-const PRELOAD_FILE = 'preload.js';
-const INDEX_FILE = 'index.html';
+const PRELOAD_FILE = path.join(ROOT_DIR, 'preload.js');
+const INDEX_FILE = path.join(ROOT_DIR, 'index.html');
 const TRAY_ICON = path.join(RESOURCES_DIR, 'tray-icon.ico');
 const PLAYLIST_DIR = path.join(RESOURCES_DIR, 'Playlist');
 const EXECUTABLE_PATH = path.join(RESOURCES_DIR, 'downloader.exe');
 
 let mainWindow;
 let tray = null;
-
-// Create resources directory if it doesn't exist
-if (!fs.existsSync(PLAYLIST_DIR)) {
-    fs.mkdirSync(PLAYLIST_DIR);
-    console.log('Resources folder created');
-}
 
 // Create settings.json file if it doesn't exist
 if (!fs.existsSync(SETTINGS_FILE)) {
@@ -88,6 +92,10 @@ function createWindow() {
         settings.isShuffling = isShuffling; // Update the shuffle state
         saveSettings(settings); // Save the updated settings
         console.log(`Shuffle state set to ${isShuffling} and saved to settings.json`); // Log the saved shuffle state
+    });
+
+    ipcMain.on('get-resource-path', (event) => {
+        event.sender.send('resource-path', PLAYLIST_DIR);
     });
 
     // Minimize the app to the tray when the main window is closed

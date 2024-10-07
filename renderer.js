@@ -18,6 +18,7 @@ let lastSongIndex = -1;
 let songHistory = [];
 let historyIndex = -1;
 let playedSongs = [];
+let playlistPath = ''
 
 async function saveShuffleState() {
     await window.electron.ipcRenderer.send('set-shuffle', isShuffling);
@@ -47,6 +48,16 @@ async function saveShuffleState() {
     console.log('Initialized volume:', volume); // Debugging log
 })();
 
+// // Load resource path on startup
+// (async () => {
+//     window.electron.ipcRenderer.send('get-resource-path');
+//     // Receive the resourcePath
+//     window.electron.ipcRenderer.on('resource-path', (event, path) => {
+//         console.log(path); // This will log the resourcePath
+//         playlistPath = path
+//     });
+// })();
+
 function getRandomSongIndex() {
   let randomIndex;
   do {
@@ -63,11 +74,21 @@ function getRandomSongIndex() {
   return randomIndex;
 }
 
+// Receive the resourcePath
+window.electron.ipcRenderer.on('resource-path', (event, path) => {
+    playlistPath = path;
+});
+
 // Improvement 1: Update UI to reflect currently playing song
 function loadSong(index) {
+    if (!playlistPath) {
+        window.electron.ipcRenderer.send('get-resource-path');
+        return;
+    }
+
     if (index < 0 || index >= audioFiles.length) return;
-    audio.src = `./Playlist/${audioFiles[index]}`;
-    
+        audio.src = `${playlistPath}\\${audioFiles[index]}`;
+
     // Update song history
     if (historyIndex === -1 || songHistory[historyIndex] !== index) {
         songHistory.push(index);
