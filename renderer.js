@@ -80,7 +80,6 @@ async function loadSong(index) {
     // Update the currently playing song in the UI
     if (index < 0 || index >= audioFiles.length) return;
         audio.src = `${playlistPath}\\${audioFiles[index]}`;
-        console.log(audio.src); // This will log the resourcePath
 
     // Update song history
     if (historyIndex === -1 || songHistory[historyIndex] !== index) {

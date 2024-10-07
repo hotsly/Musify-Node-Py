@@ -60,6 +60,7 @@ function createWindow() {
             preload: PRELOAD_FILE,
             contextIsolation: true,
             enableRemoteModule: false,
+            devTools: !app.isPackaged,
         },
     });
 
