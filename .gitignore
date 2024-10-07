@@ -13,3 +13,4 @@ settings.json
 out/
 forge.config.js
 resources/downloader.exe
+build/
