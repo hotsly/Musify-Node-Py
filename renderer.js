@@ -18,7 +18,6 @@ let lastSongIndex = -1;
 let songHistory = [];
 let historyIndex = -1;
 let playedSongs = [];
-let playlistPath = ''
 
 async function saveShuffleState() {
     await window.electron.ipcRenderer.send('set-shuffle', isShuffling);
