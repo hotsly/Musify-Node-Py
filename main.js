@@ -133,6 +133,18 @@ function createTray() {
             }
         },
         {
+            label: 'Next',
+            click: () => {
+                mainWindow.webContents.send('next-song');
+            }
+        },
+        {
+            label: 'Previous',
+            click: () => {
+                mainWindow.webContents.send('prev-song');
+            }
+        },
+        {
             label: 'Exit',
             click: () => {
                 // Quit the app

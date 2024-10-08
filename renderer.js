@@ -138,7 +138,22 @@ function playNextSong() {
     loadSong(currentSongIndex);
     audio.play();
     playPauseBtn.innerHTML = '<i class="bi bi-pause-fill"></i>';
-  }
+}
+
+function playPrevSong() {
+    if (historyIndex > 0) {
+        historyIndex--;
+        currentSongIndex = songHistory[historyIndex];
+        loadSong(currentSongIndex);
+        audio.play();
+        playPauseBtn.innerHTML = '<i class="bi bi-pause-fill"></i>';
+    } else if (!isShuffling) {
+        currentSongIndex = (currentSongIndex - 1 + audioFiles.length) % audioFiles.length;
+        loadSong(currentSongIndex);
+        audio.play();
+        playPauseBtn.innerHTML = '<i class="bi bi-pause-fill"></i>';
+    }
+}
   
 audio.addEventListener('ended', playNextSong);
 
@@ -205,20 +220,11 @@ shuffleBtn.addEventListener('click', async () => {
 nextBtn.addEventListener('click', playNextSong);
 
 // Improvement 4: Go to previous song in playlist when not in shuffle mode
-prevBtn.addEventListener('click', () => {
-    if (historyIndex > 0) {
-        historyIndex--;
-        currentSongIndex = songHistory[historyIndex];
-        loadSong(currentSongIndex);
-        audio.play();
-        playPauseBtn.innerHTML = '<i class="bi bi-pause-fill"></i>';
-    } else if (!isShuffling) {
-        currentSongIndex = (currentSongIndex - 1 + audioFiles.length) % audioFiles.length;
-        loadSong(currentSongIndex);
-        audio.play();
-        playPauseBtn.innerHTML = '<i class="bi bi-pause-fill"></i>';
-    }
-});
+prevBtn.addEventListener('click', playPrevSong);
+
+window.electron.ipcRenderer.on('next-song', playNextSong);
+
+window.electron.ipcRenderer.on('prev-song', playPrevSong);
 
 // Volume button functionality
 volumeBtn.addEventListener('click', () => {
