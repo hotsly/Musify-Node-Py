@@ -125,6 +125,8 @@ async function loadSong(index) {
         const seconds = Math.floor(currentTime % 60);
         durationDisplay.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
     });
+
+    await audio.play()
 }
 
 function playNextSong() {
