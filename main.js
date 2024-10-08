@@ -15,7 +15,7 @@ if (app.isPackaged){
     ROOT_DIR = __dirname;
     RESOURCES_DIR = path.join(ROOT_DIR, 'resources');
 }
-console.log(app.isPackaged)
+console.log(`Is packaged: ${app.isPackaged}`)
 
 const SETTINGS_FILE = path.join(RESOURCES_DIR, 'settings.json');
 const PRELOAD_FILE = path.join(ROOT_DIR, 'preload.js');
@@ -112,20 +112,6 @@ function createTray() {
     
     // Create a context menu for the tray icon
     const contextMenu = Menu.buildFromTemplate([
-        {
-            label: 'Show',
-            click: () => {
-                // Show the main window
-                if (mainWindow.isMinimized()) {
-                    mainWindow.restore();
-                }
-                mainWindow.show();
-                mainWindow.focus();
-                mainWindow.setVisibleOnAllWorkspaces(true);
-                mainWindow.setSkipTaskbar(false);
-                mainWindow.webContents.send('show-window');
-            }
-        },
         {
             label: 'Play/Pause',
             click: () => {
