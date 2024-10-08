@@ -119,11 +119,17 @@ function createTray() {
                 if (mainWindow.isMinimized()) {
                     mainWindow.restore();
                 }
- mainWindow.show();
+                mainWindow.show();
                 mainWindow.focus();
                 mainWindow.setVisibleOnAllWorkspaces(true);
                 mainWindow.setSkipTaskbar(false);
                 mainWindow.webContents.send('show-window');
+            }
+        },
+        {
+            label: 'Play/Pause',
+            click: () => {
+                mainWindow.webContents.send('play-pause-audio');
             }
         },
         {

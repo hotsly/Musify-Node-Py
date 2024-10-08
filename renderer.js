@@ -166,6 +166,16 @@ playPauseBtn.addEventListener('click', () => {
     }
 });
 
+window.electron.ipcRenderer.on('play-pause-audio', () => {
+    if (audio.paused) {
+        audio.play();
+        playPauseBtn.innerHTML = '<i class="bi bi-pause-fill"></i>'; // Change to pause icon
+    } else {
+        audio.pause();
+        playPauseBtn.innerHTML = '<i class="bi bi-play-fill"></i>'; // Change to play icon
+    }
+});
+
 audio.addEventListener('play', () => {
     playPauseBtn.innerHTML = '<i class="bi bi-pause-fill"></i>'; // Change to pause icon
 });
