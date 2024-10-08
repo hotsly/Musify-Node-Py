@@ -55,7 +55,7 @@ function createWindow() {
     mainWindow = new BrowserWindow({
         width: 360,
         height: 500,
-        resizable: false,
+        resizable: true,
         autoHideMenuBar: true,
         icon: TRAY_ICON,
         webPreferences: {

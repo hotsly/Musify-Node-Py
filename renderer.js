@@ -350,13 +350,17 @@ addPlaylistBtn.addEventListener('click', () => {
     }
 });
 
+youtubeLinkInput.addEventListener('keypress', (event) => {
+    if (event.key === 'Enter') {
+        addPlaylistBtn.click();
+    }
+});
+
 // Improvement 6: Combine 'load-playlist' event listeners
 window.electron.ipcRenderer.on('load-playlist', (files) => {
     audioFiles = files;
     playedSongs = [];
     currentSongIndex = 0;
-    // Remove this line to prevent the first song from being loaded
-    // loadSong(currentSongIndex);
     
     songList.innerHTML = '';
     
@@ -388,11 +392,6 @@ window.electron.ipcRenderer.on('load-playlist', (files) => {
             if (currentSongIndex >= audioFiles.length) {
                 currentSongIndex = 0;
             }
-            
-            // if (audioFiles.length > 0) {
-            //     loadSong(currentSongIndex);
-            //     audio.play();
-            // }
         };
         
         songItem.appendChild(songTitle);
