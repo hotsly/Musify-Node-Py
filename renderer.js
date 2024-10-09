@@ -9,6 +9,7 @@ const volumeBtn = document.getElementById('volume-btn');
 const youtubeLinkInput = document.getElementById('youtube-link');
 const addPlaylistBtn = document.getElementById('add-playlist-btn');
 const shuffleBtn = document.getElementById('shuffle-btn');
+const playAllBtn = document.getElementById('play-all-btn');
 
 let isShuffling = false;
 let isSeeking = false;
@@ -265,8 +266,6 @@ audio.addEventListener('volumechange', () => {
     window.electron.ipcRenderer.send('set-volume', volume); // Save volume to settings.json
 });
 
-// Attach event listener to the existing Play All button
-const playAllBtn = document.getElementById('play-all-btn');
 playAllBtn.addEventListener('click', () => {
     if (audioFiles.length > 0) {
         if (isShuffling) {
