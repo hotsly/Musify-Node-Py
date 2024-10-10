@@ -10,6 +10,9 @@ const youtubeLinkInput = document.getElementById('youtube-link');
 const addPlaylistBtn = document.getElementById('add-playlist-btn');
 const shuffleBtn = document.getElementById('shuffle-btn');
 const playAllBtn = document.getElementById('play-all-btn');
+const loadingSpinner = document.getElementById('loading-spinner');
+const shuffleToast = document.getElementById('shuffle-toast');
+const shuffleToastMessage = document.getElementById('shuffle-toast-message');
 
 let isShuffling = false;
 let isSeeking = false;
@@ -191,6 +194,19 @@ audio.addEventListener('pause', () => {
     playPauseBtn.innerHTML = '<i class="bi bi-play-fill"></i>'; // Change to play icon
 });
 
+function showShuffleToast(isShuffleOn) {
+    if (isShuffleOn) {
+      shuffleToastMessage.textContent = 'Shuffle On';
+    } else {
+      shuffleToastMessage.textContent = 'Shuffle Off';
+    }
+    const toast = new bootstrap.Toast(shuffleToast, {
+      autohide: true,
+      delay: 2000
+    });
+    toast.show();
+}
+
 shuffleBtn.addEventListener('click', async () => {
     if (shuffleBtn.classList.contains('active')) {
         shuffleBtn.classList.remove('active');
@@ -198,13 +214,14 @@ shuffleBtn.addEventListener('click', async () => {
         shuffleBtn.style.backgroundColor = '#6c757d';
         isShuffling = false;
         playedSongs = [];
+        showShuffleToast(false);
     } else {
         shuffleBtn.classList.remove('inactive');
         shuffleBtn.classList.add('active');
         shuffleBtn.style.backgroundColor = '#007bff';
         isShuffling = true;
+        showShuffleToast(true);
     }
-    // Improvement 8: Use await when calling saveShuffleState
     await saveShuffleState();
 });
 
@@ -326,7 +343,7 @@ window.electron.ipcRenderer.on('download-complete', (event, file) => {
     // Hide the spinner when all downloads are complete
     if (downloadingSongs === 0) {
         console.log('All downloads complete, hiding spinner.');
-        const loadingSpinner = document.getElementById('loading-spinner');
+        
         loadingSpinner.style.display = 'none'; // Hide the spinner
     }
 });
@@ -338,7 +355,6 @@ addPlaylistBtn.addEventListener('click', () => {
         downloadingSongs++; // Increment the counter for active downloads
 
         // Show the spinner when a new song is being added
-        const loadingSpinner = document.getElementById('loading-spinner');
         loadingSpinner.style.display = 'block';
 
         window.electron.ipcRenderer.send('download-youtube-audio', youtubeLink);

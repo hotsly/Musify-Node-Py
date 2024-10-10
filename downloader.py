@@ -12,8 +12,8 @@ def download_audio(youtube_url, output_path='.\\resources\\Playlist'):
         'format': 'bestaudio/best',
         'outtmpl': os.path.join(output_path, '%(title)s.%(ext)s'),
         'noplaylist': True,
-        'quiet': True,  # Suppress output
         'no_warnings': True,  # Suppress yt-dlp warnings
+        'progress': True,  # Enable progress updates
     }
 
     try:
@@ -24,23 +24,6 @@ def download_audio(youtube_url, output_path='.\\resources\\Playlist'):
 
     except Exception as e:
         print(f'An error occurred: {e}')
-
-    # Wait a moment before checking for the file
-    time.sleep(1)  # Delay to allow the file system to update
-
-    # Attempt to list downloaded files
-    try:
-        downloaded_files = os.listdir(output_path)
-        if downloaded_files:
-            latest_file = max(downloaded_files, key=lambda f: os.path.getctime(os.path.join(output_path, f)))
-            latest_file_path = os.path.join(output_path, latest_file)
-            print(latest_file_path)  # Output the full path of the latest file for Electron
-            return latest_file_path  # Return the file path to main.js
-        else:
-            print('No files found in the directory.')
-
-    except Exception as ex:
-        print(f'Error accessing files: {ex}')
 
 if __name__ == '__main__':
     if len(sys.argv) > 1:

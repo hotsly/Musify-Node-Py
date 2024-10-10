@@ -55,8 +55,10 @@
         </div>
 
         <h2 class="h5 d-flex align-items-center">
-            Playlist 
-            <div id="loading-spinner" class="spinner-border spinner-border-sm text-light ms-2" style="display: none;"></div>
+            <div class="playlist-label">
+              Playlist 
+              <div id="loading-spinner" class="spinner-border spinner-border-sm text-light ms-2" style="display: none;"></div>
+            </div>
         </h2>
         <!-- Scrollable playlist container -->
         <div id="playlist-container" style="position: relative;">
@@ -66,7 +68,13 @@
             <button id="play-all-btn" class="play-all-button">
                 <i class="bi bi-play-fill"></i> <!-- Bootstrap Play Icon -->
             </button>
-        </div>        
+        </div>  
+        <!-- Add this HTML element below the playlist -->
+        <div class="toast align-items-center" role="alert" aria-live="assertive" aria-atomic="true" id="shuffle-toast">
+            <div class="d-flex">
+              <div class="toast-body" id="shuffle-toast-message">Shuffle On</div>
+            </div>
+        </div>
     </div>
 
     <!-- Bootstrap JS (optional for dropdowns, modals, etc.) -->
