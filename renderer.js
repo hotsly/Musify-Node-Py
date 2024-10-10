@@ -34,11 +34,11 @@ async function saveShuffleState() {
     if (isShuffling) {
         shuffleBtn.classList.add('active');
         shuffleBtn.classList.remove('inactive');
-        shuffleBtn.style.backgroundColor = '#007bff';
+        shuffleBtn.firstElementChild.style.color = '#007bff';
     } else {
         shuffleBtn.classList.remove('active');
         shuffleBtn.classList.add('inactive');
-        shuffleBtn.style.backgroundColor = '#6c757d';
+        shuffleBtn.firstElementChild.style.color = 'white';
     }
     console.log('Initialized shuffle state:', isShuffling);
 })();
@@ -98,9 +98,9 @@ async function loadSong(index) {
 
     // Set correct button state
     if (audio.paused) {
-        playPauseBtn.innerHTML = '<i class="bi bi-play-fill"></i>'; // Change to play icon
+        playPauseBtn.innerHTML = '<i class="bi bi-play-fill" style="color: white;"></i>'; // Change to play icon
     } else {
-        playPauseBtn.innerHTML = '<i class="bi bi-pause-fill"></i>'; // Change to pause icon
+        playPauseBtn.innerHTML = '<i class="bi bi-pause-fill" style="color: white;;"></i>'; // Change to pause icon
     }
 
     // Update duration display
@@ -132,7 +132,7 @@ function playNextSong() {
     }
     loadSong(currentSongIndex);
     audio.play();
-    playPauseBtn.innerHTML = '<i class="bi bi-pause-fill"></i>';
+    playPauseBtn.innerHTML = '<i class="bi bi-pause-fill" style="color: white;"></i>';
 }
 
 function playPrevSong() {
@@ -141,12 +141,12 @@ function playPrevSong() {
         currentSongIndex = songHistory[historyIndex];
         loadSong(currentSongIndex);
         audio.play();
-        playPauseBtn.innerHTML = '<i class="bi bi-pause-fill"></i>';
+        playPauseBtn.innerHTML = '<i class="bi bi-pause-fill" style="color: white;"></i>';
     } else if (!isShuffling) {
         currentSongIndex = (currentSongIndex - 1 + audioFiles.length) % audioFiles.length;
         loadSong(currentSongIndex);
         audio.play();
-        playPauseBtn.innerHTML = '<i class="bi bi-pause-fill"></i>';
+        playPauseBtn.innerHTML = '<i class="bi bi-pause-fill" style="color: white;"></i>';
     }
 }
   
@@ -169,29 +169,29 @@ audio.addEventListener('loadedmetadata', () => {
 playPauseBtn.addEventListener('click', () => {
     if (audio.paused) {
         audio.play();
-        playPauseBtn.innerHTML = '<i class="bi bi-pause-fill"></i>'; // Change to pause icon
+        playPauseBtn.innerHTML = '<i class="bi bi-pause-fill" style="color: white;"></i>'; // Change to pause icon
     } else {
         audio.pause();
-        playPauseBtn.innerHTML = '<i class="bi bi-play-fill"></i>'; // Change to play icon
+        playPauseBtn.innerHTML = '<i class="bi bi-play-fill" style="color: white;"></i>'; // Change to play icon
     }
 });
 
 window.electron.ipcRenderer.on('play-pause-audio', () => {
     if (audio.paused) {
         audio.play();
-        playPauseBtn.innerHTML = '<i class="bi bi-pause-fill"></i>'; // Change to pause icon
+        playPauseBtn.innerHTML = '<i class="bi bi-pause-fill" style="color: white;"></i>'; // Change to pause icon
     } else {
         audio.pause();
-        playPauseBtn.innerHTML = '<i class="bi bi-play-fill"></i>'; // Change to play icon
+        playPauseBtn.innerHTML = '<i class="bi bi-play-fill" style="color: white;"></i>'; // Change to play icon
     }
 });
 
 audio.addEventListener('play', () => {
-    playPauseBtn.innerHTML = '<i class="bi bi-pause-fill"></i>'; // Change to pause icon
+    playPauseBtn.innerHTML = '<i class="bi bi-pause-fill" style="color: white;"></i>'; // Change to pause icon
 });
 
 audio.addEventListener('pause', () => {
-    playPauseBtn.innerHTML = '<i class="bi bi-play-fill"></i>'; // Change to play icon
+    playPauseBtn.innerHTML = '<i class="bi bi-play-fill" style="color: white;"></i>'; // Change to play icon
 });
 
 function showShuffleToast(isShuffleOn) {
@@ -211,14 +211,14 @@ shuffleBtn.addEventListener('click', async () => {
     if (shuffleBtn.classList.contains('active')) {
         shuffleBtn.classList.remove('active');
         shuffleBtn.classList.add('inactive');
-        shuffleBtn.style.backgroundColor = '#6c757d';
+        shuffleBtn.firstElementChild.style.color = 'white';
         isShuffling = false;
         playedSongs = [];
         showShuffleToast(false);
     } else {
         shuffleBtn.classList.remove('inactive');
         shuffleBtn.classList.add('active');
-        shuffleBtn.style.backgroundColor = '#007bff';
+        shuffleBtn.firstElementChild.style.color = '#007bff';
         isShuffling = true;
         showShuffleToast(true);
     }
@@ -285,7 +285,7 @@ playAllBtn.addEventListener('click', () => {
         loadSong(currentSongIndex);
         audio.play()
             .then(() => {
-                playPauseBtn.innerHTML = '<i class="bi bi-pause-fill"></i>'; // Change button to pause icon
+                playPauseBtn.innerHTML = '<i class="bi bi-pause-fill" style="color: white;"></i>'; // Change button to pause icon
             })
             .catch(error => {
                 console.error('Error playing audio:', error);
@@ -313,13 +313,13 @@ window.electron.ipcRenderer.on('download-complete', (event, file) => {
         songTitle.textContent = songName;
 
         const removeBtn = document.createElement('button');
-        removeBtn.innerHTML = '<i class="bi bi-x-circle"></i>';
+        removeBtn.innerHTML = '<i class="bi bi-trash-fill"></i>';
         removeBtn.className = 'btn btn-link';
 
         removeBtn.onclick = async () => {
             if (audio.src.endsWith(file)) {
                 audio.pause();
-                playPauseBtn.innerHTML = '<i class="bi bi-play-fill"></i>';
+                playPauseBtn.innerHTML = '<i class="bi bi-play-fill" style="color: white;"></i>';
             }
 
             songList.removeChild(songItem);
@@ -389,14 +389,14 @@ window.electron.ipcRenderer.on('load-playlist', (files) => {
         songTitle.textContent = songName;
         
         const removeBtn = document.createElement('button');
-        removeBtn.innerHTML = '<i class="bi bi-x-circle"></i>';
+        removeBtn.innerHTML = '<i class="bi bi-trash" style="color: white;"></i>';
         removeBtn.className = 'btn btn-link';
         
         removeBtn.onclick = async (event) => {
             event.stopPropagation(); // Prevent triggering the song play
             if (audio.src.endsWith(file)) {
                 audio.pause();
-                playPauseBtn.innerHTML = '<i class="bi bi-play-fill"></i>';
+                playPauseBtn.innerHTML = '<i class="bi bi-play-fill" style="color: white;"></i>';
             }
             
             songList.removeChild(songItem);

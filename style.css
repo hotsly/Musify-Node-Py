@@ -41,24 +41,6 @@ h3 {
   background-color: #218838; /* Darker shade on hover */
 }
 
-/* Shuffle button styles */
-.shuffle-btn {
-  background-color: #6c757d; /* Gray background for inactive shuffle button */
-  color: #fff; /* White text color */
-}
-
-.shuffle-btn.active {
-  background-color: #007bff; /* Blue background when active */
-}
-
-.shuffle-btn:hover {
-  background-color: #0056b3; /* Darker blue on hover */
-}
-
-.shuffle-btn i {
-  color: white; /* Icon color */
-}
-
 .list-group-item {
   background-color: #1e1e1e; /* Dark background for list items */
   border: none; /* No border for list items */
@@ -259,15 +241,6 @@ html {
 #loading-spinner {
   margin-left: 5px;
   margin-top: 2px; /* add this to move the spinner down a bit */
-}
-
-.shuffle-indicator {
-  width: 40px; /* adjust the width to your liking */
-  height: 20px; /* adjust the height to your liking */
-  background-color: #ccc; /* adjust the background color to your liking */
-  border-radius: 20px; /* add circular sides */
-  display: inline-block;
-  margin: 10px; /* add some margin to position it correctly */
 }
 
 #shuffle-toast {
