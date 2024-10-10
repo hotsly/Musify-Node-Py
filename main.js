@@ -189,20 +189,20 @@ if (!app.requestSingleInstanceLock()) {
         // Listen for 'download-youtube-audio' event
         ipcMain.on('download-youtube-audio', (event, youtubeLink) => {
             console.log(`Downloading audio from: ${youtubeLink}`);
-
+        
             // Run the executable file with the YouTube link
-            let command 
-            if (app.isPackaged){
+            let command;
+            if (app.isPackaged) {
                 command = `"${EXECUTABLE_PATH}" "${youtubeLink}"`;
-                console.log(`Running Packed Mode for Downloader`)
+                console.log(`Running Packed Mode for Downloader`);
             } else {
                 command = `python "${EXECUTABLE_PATH}" "${youtubeLink}"`;
-                console.log(`Test Mode for Downloader`)    
+                console.log(`Test Mode for Downloader`);
             }
-
+        
             // Execute the command asynchronously
             exec(command, (error, stdout, stderr) => {
-                if ( error) {
+                if (error) {
                     console.error(`Error: ${error.message}`);
                     return;
                 }
@@ -210,24 +210,32 @@ if (!app.requestSingleInstanceLock()) {
                     console.error(`stderr: ${stderr}`);
                     return;
                 }
-                console.log(`stdout: ${stdout}`);
-
-                // After the download is complete, read the playlist directory again
+        
+                const downloadedFile = stdout.trim(); // Capture the downloaded file path
+                console.log(`Downloaded file: ${downloadedFile}`); // Log the downloaded file
+        
+                if (downloadedFile) {
+                    mainWindow.webContents.send('download-complete', downloadedFile); // Send the file path to renderer
+                } else {
+                    console.error('No file downloaded or an error occurred.');
+                }
+        
+                // After sending the file path, refresh the playlist
                 fs.readdir(PLAYLIST_DIR, (err, files) => {
                     if (err) throw err;
-
-                    const audioFiles = files.filter(file => 
-                        file.endsWith('.mp3') || 
-                        file.endsWith('.webm') || 
-                        file.endsWith('.m4a') || 
-                        file.endsWith('.wav') 
+        
+                    const audioFiles = files.filter(file =>
+                        file.endsWith('.mp3') ||
+                        file.endsWith('.webm') ||
+                        file.endsWith('.m4a') ||
+                        file.endsWith('.wav')
                     );
-
+        
                     // Notify the renderer process with the updated playlist
                     mainWindow.webContents.send('load-playlist', audioFiles);
                 });
             });
-        });
+        });        
     });
 
     // Handle the delete-file request

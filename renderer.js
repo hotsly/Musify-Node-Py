@@ -19,6 +19,7 @@ let lastSongIndex = -1;
 let songHistory = [];
 let historyIndex = -1;
 let playedSongs = [];
+let downloadingSongs = 0;
 
 async function saveShuffleState() {
     await window.electron.ipcRenderer.send('set-shuffle', isShuffling);
@@ -47,16 +48,6 @@ async function saveShuffleState() {
     updateVolumeIcon(volume); // Update the volume icon
     console.log('Initialized volume:', volume); // Debugging log
 })();
-
-// // Load resource path on startup
-// (async () => {
-//     window.electron.ipcRenderer.send('get-resource-path');
-//     // Receive the resourcePath
-//     window.electron.ipcRenderer.on('resource-path', (event, path) => {
-//         console.log(path); // This will log the resourcePath
-//         playlistPath = path
-//     });
-// })();
 
 function getRandomSongIndex() {
   let randomIndex;
@@ -289,66 +280,75 @@ playAllBtn.addEventListener('click', () => {
     }
 });
 
+// Add download-complete listener globally (only once)
+window.electron.ipcRenderer.on('download-complete', (event, file) => {
+    console.log('Download complete event triggered.');
+    
+    downloadingSongs--; // Decrease the download counter
+
+    // Add the song to the playlist if file is defined
+    if (file) {
+        const songName = file.split('/').pop(); // Get the song name
+        const songItem = document.createElement('div');
+        songItem.className = 'list-group-item d-flex justify-content-between align-items-center';
+
+        const songTitle = document.createElement('span');
+        songTitle.textContent = songName;
+
+        const removeBtn = document.createElement('button');
+        removeBtn.innerHTML = '<i class="bi bi-x-circle"></i>';
+        removeBtn.className = 'btn btn-link';
+
+        removeBtn.onclick = async () => {
+            if (audio.src.endsWith(file)) {
+                audio.pause();
+                playPauseBtn.innerHTML = '<i class="bi bi-play-fill"></i>';
+            }
+
+            songList.removeChild(songItem);
+            await window.electron.ipcRenderer.invoke('delete-file', file);
+            
+            audioFiles = audioFiles.filter(item => item !== file);
+
+            if (currentSongIndex >= audioFiles.length) {
+                currentSongIndex = 0;
+            }
+        };
+
+        songItem.appendChild(songTitle);
+        songItem.appendChild(removeBtn);
+        songList.appendChild(songItem);
+
+        // Update audioFiles array
+        audioFiles.push(file);
+    }
+
+    // Hide the spinner when all downloads are complete
+    if (downloadingSongs === 0) {
+        console.log('All downloads complete, hiding spinner.');
+        const loadingSpinner = document.getElementById('loading-spinner');
+        loadingSpinner.style.display = 'none'; // Hide the spinner
+    }
+});
+
+// Add click event listener for "Add to Playlist"
 addPlaylistBtn.addEventListener('click', () => {
     const youtubeLink = youtubeLinkInput.value.trim();
     if (youtubeLink) {
-        const loadingItem = document.createElement('div');
-        loadingItem.textContent = 'Loading...';
-        loadingItem.className = 'list-group-item disabled';
-        loadingItem.style.pointerEvents = 'none';
-        songList.appendChild(loadingItem);
-        
+        downloadingSongs++; // Increment the counter for active downloads
+
+        // Show the spinner when a new song is being added
+        const loadingSpinner = document.getElementById('loading-spinner');
+        loadingSpinner.style.display = 'block';
+
         window.electron.ipcRenderer.send('download-youtube-audio', youtubeLink);
-        
-        const downloadCompleteHandler = (event, file) => {
-            songList.removeChild(loadingItem);
-            
-            const songName = file.split('/').pop();
-            
-            const songItem = document.createElement('div');
-            songItem.className = 'list-group-item d-flex justify-content-between align-items-center';
-            
-            const songTitle = document.createElement('span');
-            songTitle.textContent = songName;
-            
-            const removeBtn = document.createElement('button');
-            removeBtn.innerHTML = '<i class="bi bi-x-circle"></i>';
-            removeBtn.className = 'btn btn-link';
-            
-            removeBtn.onclick = async () => {
-                if (audio.src.endsWith(file)) {
-                    audio.pause();
-                    playPauseBtn.innerHTML = '<i class="bi bi-play-fill"></i>';
-                }
-                
-                songList.removeChild(songItem);
-                await window.electron.ipcRenderer.invoke('delete-file', file);
-                
-                audioFiles = audioFiles.filter(item => item !== file);
-                
-                if (currentSongIndex >= audioFiles.length) {
-                    currentSongIndex = 0;
-                }
-            };
-            
-            songItem.appendChild(songTitle);
-            songItem.appendChild(removeBtn);
-            songList.appendChild(songItem);
-            
-            // Update audioFiles array
-            audioFiles.push(file);
-            
-            window.electron.ipcRenderer.removeListener('download-complete', downloadCompleteHandler);
-        };
-        
-        window.electron.ipcRenderer.on('download-complete', downloadCompleteHandler);
-        
-        youtubeLinkInput.value = '';
+        youtubeLinkInput.value = ''; // Clear input
     } else {
         alert('Please enter a valid YouTube URL.');
     }
 });
 
+// Handle pressing "Enter" in the input field
 youtubeLinkInput.addEventListener('keypress', (event) => {
     if (event.key === 'Enter') {
         addPlaylistBtn.click();

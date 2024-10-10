@@ -31,11 +31,11 @@ def download_audio(youtube_url, output_path='.\\resources\\Playlist'):
     # Attempt to list downloaded files
     try:
         downloaded_files = os.listdir(output_path)
-        # Check if any files exist
         if downloaded_files:
-            # Use the full path for the latest file
             latest_file = max(downloaded_files, key=lambda f: os.path.getctime(os.path.join(output_path, f)))
-            print(f'Latest downloaded file: {latest_file}')  # Output the latest file name
+            latest_file_path = os.path.join(output_path, latest_file)
+            print(latest_file_path)  # Output the full path of the latest file for Electron
+            return latest_file_path  # Return the file path to main.js
         else:
             print('No files found in the directory.')
 
