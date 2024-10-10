@@ -26,20 +26,6 @@ h3 {
   color: #313131; /* White text */
 }
 
-.btn-primary:hover,
-.btn-secondary:hover {
-  background-color: #0056b3; /* Darker blue on hover */
-}
-
-.btn-success {
-  background-color: #28a745; /* Green button color */
-  border: none; /* No border for buttons */
-}
-
-.btn-success:hover {
-  background-color: #218838; /* Darker shade on hover */
-}
-
 .list-group-item {
   background-color: #1e1e1e; /* Dark background for list items */
   border: none; /* No border for list items */

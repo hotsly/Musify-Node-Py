@@ -90,9 +90,9 @@ async function loadSong(index) {
     const songItems = songList.getElementsByClassName('list-group-item');
     for (let i = 0; i < songItems.length; i++) {
         if (i === index) {
-            songItems[i].classList.add('active');
+            songItems[i].style.backgroundColor = '#292b2c'; // Change background color of current song
         } else {
-            songItems[i].classList.remove('active');
+            songItems[i].style.backgroundColor = ''; // Reset background color for other songs
         }
     }
 
