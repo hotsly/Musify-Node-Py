@@ -53,19 +53,42 @@ async function saveShuffleState() {
 })();
 
 function getRandomSongIndex() {
-  let randomIndex;
-  do {
-    randomIndex = Math.floor(Math.random() * audioFiles.length);
-  } while (playedSongs.includes(randomIndex));
-  
-  playedSongs.push(randomIndex);
-  
-  // If all songs have been played, reset the playedSongs array
-  if (playedSongs.length === audioFiles.length) {
-    playedSongs = [];
-  }
-  
-  return randomIndex;
+    let randomIndex;
+    if (isShuffling) {
+      if (audioFiles.length === 1) {
+        // If there is only one song, play the same song
+        randomIndex = 0;
+      } else if (audioFiles.length === 2) {
+        // If there are only two songs, play the other song
+        randomIndex = currentSongIndex === 0 ? 1 : 0;
+      } else {
+        let unplayedSongs = [];
+        for (let i = 0; i < audioFiles.length; i++) {
+          if (!playedSongs.includes(i) && i !== currentSongIndex) {
+            unplayedSongs.push(i);
+          }
+        }
+        
+        if (unplayedSongs.length > 0) {
+          randomIndex = unplayedSongs[Math.floor(Math.random() * unplayedSongs.length)];
+        } else {
+          randomIndex = Math.floor(Math.random() * audioFiles.length);
+        }
+        
+        playedSongs.push(randomIndex);
+        
+        // If all songs have been played, reset the playedSongs array and update currentSongIndex
+        if (playedSongs.length === audioFiles.length) {
+          playedSongs = [];
+          currentSongIndex = (currentSongIndex + 1) % audioFiles.length;
+        }
+      }
+    } else {
+      // If isShuffling is false, play the songs in the original order
+      randomIndex = (currentSongIndex + 1) % audioFiles.length;
+    }
+    
+    return randomIndex;
 }
 
 // Improvement 1: Update UI to reflect currently playing song
@@ -125,14 +148,9 @@ async function loadSong(index) {
 }
 
 function playNextSong() {
-    if (isShuffling) {
-      currentSongIndex = getRandomSongIndex();
-    } else {
-      currentSongIndex = (currentSongIndex + 1) % audioFiles.length;
-    }
-    loadSong(currentSongIndex);
-    audio.play();
-    playPauseBtn.innerHTML = '<i class="bi bi-pause-fill" style="color: white;"></i>';
+    let randomIndex = getRandomSongIndex();
+    loadSong(randomIndex);
+    currentSongIndex = randomIndex;
 }
 
 function playPrevSong() {
