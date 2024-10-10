@@ -1,5 +1,5 @@
 body {
-  background-color: #121212; /* Dark background */
+  background-color: #2e2e2e; /* Dark background */
   color: #e0e0e0; /* Lighter text color */
   font-size: 0.9rem; /* Smaller base font size */
 }
@@ -22,9 +22,8 @@ h3 {
 /* Button styles */
 .btn-primary,
 .btn-secondary {
-  background-color: #007bff; /* Bootstrap primary color */
   border: none; /* No border for buttons */
-  color: #fff; /* White text */
+  color: #313131; /* White text */
 }
 
 .btn-primary:hover,
@@ -155,7 +154,7 @@ html {
   width: 30px; /* Set a smaller width for the button */
   height: 30px; /* Set a smaller height for the button */
   border-radius: 50%; /* Make it circular */
-  background-color: #007bff; /* Button background color */
+  background-color:rgb(53, 61, 83); /* Button background color */
   color: white; /* Icon color */
   border: none; /* No border */
   cursor: pointer; /* Pointer cursor on hover */
