@@ -192,13 +192,7 @@ html {
 }
 
 .song-controls button {
-  font-size: 0.6rem; /* Make the icons smaller */
-  padding: 1px 3px; /* Reduce padding around the icons */
-  margin: 0 2px; /* Reduce margin between the icons */
-}
-
-.song-controls button i {
-  font-size: 0.6rem; /* Make the icons smaller */
+  transition: all 0.2s ease;
 }
 
 .song-controls button:hover {
