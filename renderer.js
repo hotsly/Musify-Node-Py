@@ -307,7 +307,7 @@ window.electron.ipcRenderer.on('download-complete', (event, file) => {
     removeBtn.className = 'btn btn-link';
 
     const playNextBtn = document.createElement('button');
-    playNextBtn.innerHTML = '<i class="bi bi-arrow-bar-right"></i>';
+    playNextBtn.innerHTML = '<i class="bi bi-arrow-bar-right" style="color: white;"></i>';
     playNextBtn.className = 'btn btn-link';
 
     removeBtn.onclick = async () => {
@@ -386,7 +386,7 @@ window.electron.ipcRenderer.on('load-playlist', (files) => {
         removeBtn.className = 'btn btn-link';
 
         const playNextBtn = document.createElement('button');
-        playNextBtn.innerHTML = '<i class="bi bi-arrow-bar-right"></i>';
+        playNextBtn.innerHTML = '<i class="bi bi-arrow-bar-right" style="color: white;"></i>';
         playNextBtn.className = 'btn btn-link';
 
         removeBtn.onclick = async (event) => {
