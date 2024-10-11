@@ -15,13 +15,11 @@ const shuffleToast = document.getElementById('shuffle-toast');
 const shuffleToastMessage = document.getElementById('shuffle-toast-message');
 
 let isShuffling = false;
-let isSeeking = false;
 let currentSongIndex = 0;
 let audioFiles = [];
-let lastSongIndex = -1;
+let queue = [];
 let songHistory = [];
 let historyIndex = -1;
-let playedSongs = [];
 let downloadingSongs = 0;
 
 async function saveShuffleState() {
@@ -33,97 +31,61 @@ async function saveShuffleState() {
     isShuffling = await window.electron.ipcRenderer.invoke('get-shuffle');
     if (isShuffling) {
         shuffleBtn.classList.add('active');
-        shuffleBtn.classList.remove('inactive');
         shuffleBtn.firstElementChild.style.color = '#007bff';
     } else {
         shuffleBtn.classList.remove('active');
-        shuffleBtn.classList.add('inactive');
         shuffleBtn.firstElementChild.style.color = 'white';
     }
-    console.log('Initialized shuffle state:', isShuffling);
 })();
 
 // Load the volume setting from settings.json on startup
 (async () => {
     const volume = await window.electron.ipcRenderer.invoke('get-volume');
-    audio.volume = volume / 100; // Set audio volume to the saved value
-    volumeControl.value = volume; // Set the slider to the saved value
-    updateVolumeIcon(volume); // Update the volume icon
-    console.log('Initialized volume:', volume); // Debugging log
+    audio.volume = volume / 100; 
+    volumeControl.value = volume; 
+    updateVolumeIcon(volume); 
 })();
 
 function getRandomSongIndex() {
-    let randomIndex;
     if (isShuffling) {
-      if (audioFiles.length === 1) {
-        // If there is only one song, play the same song
-        randomIndex = 0;
-      } else if (audioFiles.length === 2) {
-        // If there are only two songs, play the other song
-        randomIndex = currentSongIndex === 0 ? 1 : 0;
-      } else {
-        let unplayedSongs = [];
-        for (let i = 0; i < audioFiles.length; i++) {
-          if (!playedSongs.includes(i) && i !== currentSongIndex) {
-            unplayedSongs.push(i);
-          }
-        }
-        
-        if (unplayedSongs.length > 0) {
-          randomIndex = unplayedSongs[Math.floor(Math.random() * unplayedSongs.length)];
+        if (audioFiles.length === 1) {
+            return 0;
+        } else if (audioFiles.length === 2) {
+            return currentSongIndex === 0 ? 1 : 0;
         } else {
-          randomIndex = Math.floor(Math.random() * audioFiles.length);
+            let unplayedSongs = [];
+            for (let i = 0; i < audioFiles.length; i++) {
+                if (i !== currentSongIndex) {
+                    unplayedSongs.push(i);
+                }
+            }
+            return unplayedSongs[Math.floor(Math.random() * unplayedSongs.length)];
         }
-        
-        playedSongs.push(randomIndex);
-        
-        // If all songs have been played, reset the playedSongs array and update currentSongIndex
-        if (playedSongs.length === audioFiles.length) {
-          playedSongs = [];
-          currentSongIndex = (currentSongIndex + 1) % audioFiles.length;
-        }
-      }
     } else {
-      // If isShuffling is false, play the songs in the original order
-      randomIndex = (currentSongIndex + 1) % audioFiles.length;
+        return (currentSongIndex + 1) % audioFiles.length;
     }
-    
-    return randomIndex;
 }
 
 // Improvement 1: Update UI to reflect currently playing song
 async function loadSong(index) {
     const playlistPath = await window.electron.ipcRenderer.invoke('get-playlist-path');
+    audio.src = `${playlistPath}\\${audioFiles[index]}`;
 
-    // Update the currently playing song in the UI
-    if (index < 0 || index >= audioFiles.length) return;
-        audio.src = `${playlistPath}\\${audioFiles[index]}`;
-
-    // Update song history
-    if (historyIndex === -1 || songHistory[historyIndex] !== index) {
-        songHistory.push(index);
-        if (songHistory.length > 10) {
-            songHistory.shift();
-        } else {
-            historyIndex++;
-        }
-    }
-    
     // Update UI to highlight current song
     const songItems = songList.getElementsByClassName('list-group-item');
     for (let i = 0; i < songItems.length; i++) {
         if (i === index) {
-            songItems[i].style.backgroundColor = '#292b2c'; // Change background color of current song
+            songItems[i].style.backgroundColor = '#292b2c'; 
         } else {
-            songItems[i].style.backgroundColor = ''; // Reset background color for other songs
+            songItems[i].style.backgroundColor = ''; 
         }
     }
 
     // Set correct button state
     if (audio.paused) {
-        playPauseBtn.innerHTML = '<i class="bi bi-play-fill" style="color: white;"></i>'; // Change to play icon
+        playPauseBtn.innerHTML = '<i class="bi bi-play-fill" style="color: white;"></i>'; 
     } else {
-        playPauseBtn.innerHTML = '<i class="bi bi-pause-fill" style="color: white;;"></i>'; // Change to pause icon
+        playPauseBtn.innerHTML = '<i class="bi bi-pause-fill" style="color: white;;"></i>'; 
     }
 
     // Update duration display
@@ -148,9 +110,17 @@ async function loadSong(index) {
 }
 
 function playNextSong() {
-    let randomIndex = getRandomSongIndex();
-    loadSong(randomIndex);
-    currentSongIndex = randomIndex;
+    if (queue.length > 0) {
+        const index = queue.shift();
+        loadSong(index);
+        currentSongIndex = index;
+        addSongToHistory(index);
+    } else {
+        let randomIndex = getRandomSongIndex();
+        loadSong(randomIndex);
+        currentSongIndex = randomIndex;
+        addSongToHistory(randomIndex);
+    }
 }
 
 function playPrevSong() {
@@ -160,15 +130,32 @@ function playPrevSong() {
         loadSong(currentSongIndex);
         audio.play();
         playPauseBtn.innerHTML = '<i class="bi bi-pause-fill" style="color: white;"></i>';
+    } else if (historyIndex === 0) {
+        historyIndex = -1;
+        currentSongIndex = songHistory[songHistory.length - 1];
+        loadSong(currentSongIndex);
+        audio.play();
+        playPauseBtn.innerHTML = '<i class="bi bi-pause-fill" style="color: white;"></i>';
     } else if (!isShuffling) {
-        currentSongIndex = (currentSongIndex - 1 + audioFiles.length) % audioFiles.length;
+        currentSongIndex = audioFiles.length - 1;
         loadSong(currentSongIndex);
         audio.play();
         playPauseBtn.innerHTML = '<i class="bi bi-pause-fill" style="color: white;"></i>';
     }
 }
-  
-audio.addEventListener('ended', playNextSong);
+
+function addSongToHistory(index) {
+    if (songHistory.length >= 20) {
+        songHistory.shift();
+    }
+    songHistory.push(index);
+    historyIndex = songHistory.length - 1;
+}
+
+audio.addEventListener('ended', () => {
+    addSongToHistory(currentSongIndex);
+    playNextSong();
+});
 
 seekBar.addEventListener('input', () => {
     const seekTime = seekBar.value;
@@ -187,40 +174,40 @@ audio.addEventListener('loadedmetadata', () => {
 playPauseBtn.addEventListener('click', () => {
     if (audio.paused) {
         audio.play();
-        playPauseBtn.innerHTML = '<i class="bi bi-pause-fill" style="color: white;"></i>'; // Change to pause icon
+        playPauseBtn.innerHTML = '<i class="bi bi-pause-fill" style="color: white;"></i>'; 
     } else {
         audio.pause();
-        playPauseBtn.innerHTML = '<i class="bi bi-play-fill" style="color: white;"></i>'; // Change to play icon
+        playPauseBtn.innerHTML = '<i class="bi bi-play-fill" style="color: white;"></i>'; 
     }
 });
 
 window.electron.ipcRenderer.on('play-pause-audio', () => {
     if (audio.paused) {
         audio.play();
-        playPauseBtn.innerHTML = '<i class="bi bi-pause-fill" style="color: white;"></i>'; // Change to pause icon
+        playPauseBtn.innerHTML = '<i class="bi bi-pause-fill" style="color: white;"></i>'; 
     } else {
         audio.pause();
-        playPauseBtn.innerHTML = '<i class="bi bi-play-fill" style="color: white;"></i>'; // Change to play icon
+        playPauseBtn.innerHTML = '<i class="bi bi-play-fill" style="color: white;"></i>'; 
     }
 });
 
 audio.addEventListener('play', () => {
-    playPauseBtn.innerHTML = '<i class="bi bi-pause-fill" style="color: white;"></i>'; // Change to pause icon
+    playPauseBtn.innerHTML = '<i class="bi bi-pause-fill" style="color: white;"></i>'; 
 });
 
 audio.addEventListener('pause', () => {
-    playPauseBtn.innerHTML = '<i class="bi bi-play-fill" style="color: white;"></i>'; // Change to play icon
+    playPauseBtn.innerHTML = '<i class="bi bi-play-fill" style="color: white;"></i>'; 
 });
 
 function showShuffleToast(isShuffleOn) {
     if (isShuffleOn) {
-      shuffleToastMessage.textContent = 'Shuffle On';
+        shuffleToastMessage.textContent = 'Shuffle On';
     } else {
-      shuffleToastMessage.textContent = 'Shuffle Off';
+        shuffleToastMessage.textContent = 'Shuffle Off';
     }
     const toast = new bootstrap.Toast(shuffleToast, {
-      autohide: true,
-      delay: 2000
+        autohide: true,
+        delay: 2000
     });
     toast.show();
 }
@@ -228,10 +215,8 @@ function showShuffleToast(isShuffleOn) {
 shuffleBtn.addEventListener('click', async () => {
     if (shuffleBtn.classList.contains('active')) {
         shuffleBtn.classList.remove('active');
-        shuffleBtn.classList.add('inactive');
         shuffleBtn.firstElementChild.style.color = 'white';
         isShuffling = false;
-        playedSongs = [];
         showShuffleToast(false);
     } else {
         shuffleBtn.classList.remove('inactive');
@@ -243,19 +228,15 @@ shuffleBtn.addEventListener('click', async () => {
     await saveShuffleState();
 });
 
-// Improvement 3: Wrap around to first song when reaching the end in non-shuffle mode
 nextBtn.addEventListener('click', playNextSong);
 
-// Improvement 4: Go to previous song in playlist when not in shuffle mode
 prevBtn.addEventListener('click', playPrevSong);
 
 window.electron.ipcRenderer.on('next-song', playNextSong);
 
 window.electron.ipcRenderer.on('prev-song', playPrevSong);
 
-// Volume button functionality
 volumeBtn.addEventListener('click', () => {
-    // Toggle the volume control's visibility
     if (volumeControl.style.display === 'none') {
         volumeControl.style.display = 'block';
     } else {
@@ -263,16 +244,14 @@ volumeBtn.addEventListener('click', () => {
     }
 });
 
-// Volume control functionality
 volumeControl.addEventListener('input', () => {
     const volume = volumeControl.value;
-    audio.volume = volume / 100; // Set volume (0.0 to 1.0)
-    window.electron.ipcRenderer.send('set-volume', volume); // Save volume to settings.json
+    audio.volume = volume / 100; 
+    window.electron.ipcRenderer.send('set-volume', volume); 
     updateVolumeIcon(volume);
-    console.log('Volume changed to:', volume); // Debugging log
+    console.log('Volume changed to:', volume); 
 });
 
-// Function to update volume icon
 function updateVolumeIcon(volume) {
     const volumeIcon = volumeBtn.querySelector('i');
     if (volume == 0) {
@@ -284,12 +263,11 @@ function updateVolumeIcon(volume) {
     }
 }
 
-// Update volume when audio volume changes (e.g., by system controls)
 audio.addEventListener('volumechange', () => {
     const volume = Math.round(audio.volume * 100);
     volumeControl.value = volume;
     updateVolumeIcon(volume);
-    window.electron.ipcRenderer.send('set-volume', volume); // Save volume to settings.json
+    window.electron.ipcRenderer.send('set-volume', volume); 
 });
 
 playAllBtn.addEventListener('click', () => {
@@ -297,102 +275,99 @@ playAllBtn.addEventListener('click', () => {
         if (isShuffling) {
             currentSongIndex = getRandomSongIndex();
         } else {
-            // If not shuffling, start from the beginning
             currentSongIndex = 0;
         }
         loadSong(currentSongIndex);
         audio.play()
             .then(() => {
-                playPauseBtn.innerHTML = '<i class="bi bi-pause-fill" style="color: white;"></i>'; // Change button to pause icon
+                playPauseBtn.innerHTML = '<i class="bi bi-pause-fill" style="color: white;"></i>'; 
             })
             .catch(error => {
                 console.error('Error playing audio:', error);
             });
     } else {
         console.log('No songs in the playlist');
-        // Optionally, you can show an alert or message to the user
-        // alert('No songs in the playlist');
     }
 });
 
-// Add download-complete listener globally (only once)
 window.electron.ipcRenderer.on('download-complete', (event, file) => {
     console.log('Download complete event triggered.');
     
-    downloadingSongs--; // Decrease the download counter
+    downloadingSongs--; 
 
-    // Add the song to the playlist if file is defined
-    if (file) {
-        const songName = file.split('/').pop(); // Get the song name
-        const songItem = document.createElement('div');
-        songItem.className = 'list-group-item d-flex justify-content-between align-items-center';
+    const songName = file.split('/').pop(); 
+    const songItem = document.createElement('div');
+    songItem.className = 'list-group-item d-flex justify-content-between align-items-center';
 
-        const songTitle = document.createElement('span');
-        songTitle.textContent = songName;
+    const songTitle = document.createElement('span');
+    songTitle.textContent = songName;
 
-        const removeBtn = document.createElement('button');
-        removeBtn.innerHTML = '<i class="bi bi-trash-fill"></i>';
-        removeBtn.className = 'btn btn-link';
+    const removeBtn = document.createElement('button');
+    removeBtn.innerHTML = '<i class="bi bi-trash-fill"></i>';
+    removeBtn.className = 'btn btn-link';
 
-        removeBtn.onclick = async () => {
-            if (audio.src.endsWith(file)) {
-                audio.pause();
-                playPauseBtn.innerHTML = '<i class="bi bi-play-fill" style="color: white;"></i>';
-            }
+    const playNextBtn = document.createElement('button');
+    playNextBtn.innerHTML = '<i class="bi bi-arrow-bar-right"></i>';
+    playNextBtn.className = 'btn btn-link';
 
-            songList.removeChild(songItem);
-            await window.electron.ipcRenderer.invoke('delete-file', file);
-            
-            audioFiles = audioFiles.filter(item => item !== file);
+    removeBtn.onclick = async () => {
+        if (audio.src.endsWith(file)) {
+            audio.pause();
+            playPauseBtn.innerHTML = '<i class="bi bi-play-fill" style="color: white;"></i>';
+        }
 
-            if (currentSongIndex >= audioFiles.length) {
-                currentSongIndex = 0;
-            }
-        };
+        songList.removeChild(songItem);
+        await window.electron.ipcRenderer.invoke('delete-file', file);
+        
+        audioFiles = audioFiles.filter(item => item !== file);
+        
+        if (currentSongIndex >= audioFiles.length) {
+            currentSongIndex = 0;
+        }
+    };
 
-        songItem.appendChild(songTitle);
-        songItem.appendChild(removeBtn);
-        songList.appendChild(songItem);
+    playNextBtn.onclick = () => {
+        const index = audioFiles.indexOf(file);
+        if (index !== -1) {
+            queue.push(index);
+        }
+    };
 
-        // Update audioFiles array
-        audioFiles.push(file);
-    }
+    songItem.appendChild(songTitle);
+    songItem.appendChild(playNextBtn);
+    songItem.appendChild(removeBtn);
+    songList.appendChild(songItem);
 
-    // Hide the spinner when all downloads are complete
+    audioFiles.push(file);
+
     if (downloadingSongs === 0) {
         console.log('All downloads complete, hiding spinner.');
-        
-        loadingSpinner.style.display = 'none'; // Hide the spinner
+        loadingSpinner.style.display = 'none'; 
     }
 });
 
-// Add click event listener for "Add to Playlist"
 addPlaylistBtn.addEventListener('click', () => {
     const youtubeLink = youtubeLinkInput.value.trim();
     if (youtubeLink) {
-        downloadingSongs++; // Increment the counter for active downloads
+        downloadingSongs++; 
 
-        // Show the spinner when a new song is being added
-        loadingSpinner.style.display = 'block';
+        loadingSpinner.style.display = 'block'; 
 
         window.electron.ipcRenderer.send('download-youtube-audio', youtubeLink);
-        youtubeLinkInput.value = ''; // Clear input
+        youtubeLinkInput.value = ''; 
     } else {
         alert('Please enter a valid YouTube URL.');
     }
 });
 
-// Handle pressing "Enter" in the input field
 youtubeLinkInput.addEventListener('keypress', (event) => {
     if (event.key === 'Enter') {
         addPlaylistBtn.click();
     }
 });
 
-// Improvement 6: Combine 'load-playlist' event listeners
 window.electron.ipcRenderer.on('load-playlist', (files) => {
     audioFiles = files;
-    playedSongs = [];
     currentSongIndex = 0;
     
     songList.innerHTML = '';
@@ -409,9 +384,13 @@ window.electron.ipcRenderer.on('load-playlist', (files) => {
         const removeBtn = document.createElement('button');
         removeBtn.innerHTML = '<i class="bi bi-trash" style="color: white;"></i>';
         removeBtn.className = 'btn btn-link';
-        
+
+        const playNextBtn = document.createElement('button');
+        playNextBtn.innerHTML = '<i class="bi bi-arrow-bar-right"></i>';
+        playNextBtn.className = 'btn btn-link';
+
         removeBtn.onclick = async (event) => {
-            event.stopPropagation(); // Prevent triggering the song play
+            event.stopPropagation(); 
             if (audio.src.endsWith(file)) {
                 audio.pause();
                 playPauseBtn.innerHTML = '<i class="bi bi-play-fill" style="color: white;"></i>';
@@ -426,8 +405,14 @@ window.electron.ipcRenderer.on('load-playlist', (files) => {
                 currentSongIndex = 0;
             }
         };
-        
+
+        playNextBtn.onclick = () => {
+            event.stopPropagation();
+            queue.push(index);
+        };
+
         songItem.appendChild(songTitle);
+        songItem.appendChild(playNextBtn);
         songItem.appendChild(removeBtn);
         songList.appendChild(songItem);
         
@@ -435,6 +420,7 @@ window.electron.ipcRenderer.on('load-playlist', (files) => {
             currentSongIndex = index;
             loadSong(currentSongIndex);
             audio.play();
+            addSongToHistory(currentSongIndex);
             // The 'play' event listener will handle changing the button to pause
         });
     });
